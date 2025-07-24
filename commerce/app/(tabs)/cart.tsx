@@ -4,11 +4,11 @@ import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import { getToken } from '@/utils/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useRouter } from 'expo-router';
 
 export default function CartScreen() {
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const fetchCart = async () => {
     try {
       setLoading(true);
@@ -140,7 +140,7 @@ export default function CartScreen() {
               <Text style={styles.totalAmount}>{getTotal().toFixed(2)} €</Text>
             </View>
             
-            <TouchableOpacity style={styles.checkoutBtn}>
+            <TouchableOpacity style={styles.checkoutBtn} onPress={() => router.push('/selectAdresse')}>
               <Text style={styles.checkoutText}>Passer à la caisse</Text>
               <Text style={styles.checkoutIcon}>→</Text>
             </TouchableOpacity>
