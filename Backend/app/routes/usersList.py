@@ -13,7 +13,7 @@ users_bp =Blueprint("users_bp", __name__)
 @jwt_required()
 def get_users():
     current_user = get_current_user()
-    if current_user["role"] != "ADMIN":
+    if current_user["role"] != "admin":
         return jsonify({"msg": "Non autorisé"}), 403
 
     users = list(mongo.db.users.find({}, {"password": 0}))  # pas de mdp
@@ -32,12 +32,11 @@ def update_user(user_id):
     update_fields = {key: data[key] for key in ["name", "email", "role"] if key in data}
     mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update_fields})
     return jsonify({"msg": "Utilisateur mis à jour"}), 200
-
 @users_bp.route("/<user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(user_id):
     current_user = get_current_user()
-    if current_user["role"] != "ADMIN":
+    if current_user["role"] != "admin":
         return jsonify({"msg": "Non autorisé"}), 403
 
     mongo.db.users.delete_one({"_id": ObjectId(user_id)})

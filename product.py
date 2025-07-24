@@ -1,101 +1,41 @@
-
-
-# === Configuration ===
-
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjgzODYzOSwianRpIjoiZmZkN2E3OTUtNDYzZi00YmYyLTg0MzgtNjE0NTYzODE0OGEwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjY4NmZkNjlkNTAyODRiNGUyM2Y2MTQwYyIsIm5iZiI6MTc1MjgzODYzOSwiY3NyZiI6IjkyNGRhN2Q5LTNhMTgtNDlkMS1hMzMwLWVjZmM5YWU4OTk4ZCIsImV4cCI6MTc1MjkyNTAzOX0.nbrf-y_wbdjb5FZFbBQgo3a-6c_ztmwv9YXLQj2a-ks"  # Remplace par ton vrai JWT
 import requests
 
-BASE_URL = "http://127.0.0.1:5000/api/products/json"
-headers = {"Content-Type": "application/json",
-           "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjgzODYzOSwianRpIjoiZmZkN2E3OTUtNDYzZi00YmYyLTg0MzgtNjE0NTYzODE0OGEwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjY4NmZkNjlkNTAyODRiNGUyM2Y2MTQwYyIsIm5iZiI6MTc1MjgzODYzOSwiY3NyZiI6IjkyNGRhN2Q5LTNhMTgtNDlkMS1hMzMwLWVjZmM5YWU4OTk4ZCIsImV4cCI6MTc1MjkyNTAzOX0.nbrf-y_wbdjb5FZFbBQgo3a-6c_ztmwv9YXLQj2a-ks "}
+BASE_URL = "http://localhost:5000"  # change si besoin
+TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MzI2MTc1MiwianRpIjoiOGM3NTc4NmUtN2YzNC00ZWQ2LWJkMjEtMDZjZTQ3ZWY2YzJmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjY4ODAwNWRkNGNjODZiZTAxM2MzNGM2OSIsIm5iZiI6MTc1MzI2MTc1MiwiY3NyZiI6Ijk0MjBlMWNkLTQ0ZDktNDg2ZS04YzcwLWE5M2RlMTZkZGYzYSIsImV4cCI6MTc1MzM0ODE1Mn0.BZBBDCEOE5R8y3ewODUdguMRN8Vel8Nv0v1YVrgejQU"
 
-products = [
+headers = {
+    "Authorization": f"Bearer {TOKEN}",
+    "Content-Type": "application/json"
+}
+
+payloads = [
+
     {
-        "name": "Winter Hoodie",
-        "price": 59.99,
-        "stock": 25,
-        "description": "Sweat à capuche chaud et confortable, parfait pour les journées d'hiver.",
-        "brand": "Zara",
-        "category": "Clothes",
-        "colors": ["Gris", "Noir"],
-        "images": ["/assets/uploads/hoddies.jpg"]
+        "product_id": "687a3208d9cc94be00fd0a00",  # Remplace avec un ObjectId réel
+        "quantite_disponible": 50,
+        "emplacement": "Bizerte"
     },
     {
-        "name": "Leather Jacket",
-        "price": 120.00,
-        "stock": 10,
-        "description": "Veste en cuir véritable pour un style urbain et élégant.",
-        "brand": "Stradivarius",
-        "category": "Clothes",
-        "colors": ["Marron"],
-        "images": ["/assets/uploads/jackets.jpg"]
+        "product_id": "687a32c3d9cc94be00fd0a01",  # Remplace avec un ObjectId réel
+        "quantite_disponible": 20,
+        "emplacement": "Bizerte"
     },
     {
-        "name": "Running Joggers",
-        "price": 39.99,
-        "stock": 40,
-        "description": "Pantalons joggers légers et flexibles, idéals pour le sport ou la détente.",
-        "brand": "Nike",
-        "category": "Clothes",
-        "colors": ["Bleu", "Gris"],
-        "images": ["/assets/uploads/joggers.jpg"]
+        "product_id": "687a32dfd9cc94be00fd0a02",  # Remplace avec un ObjectId réel
+        "quantite_disponible": 15,
+        "emplacement": "Bizerte"
     },
     {
-        "name": "Work Laptop",
-        "price": 899.00,
-        "stock": 12,
-        "description": "Ordinateur portable puissant avec processeur rapide et écran haute résolution.",
-        "brand": "HP",
-        "category": "Laptops",
-        "colors": ["Gris"],
-        "images": ["/assets/uploads/laptop.jpg"]
+        "product_id": "687a36e5d9cc94be00fd0a03",  # Remplace avec un ObjectId réel
+        "quantite_disponible": 30,
+        "emplacement": "Bizerte"
     },
     {
-        "name": "Casual Pants",
-        "price": 45.00,
-        "stock": 22,
-        "description": "Pantalon léger pour un usage quotidien avec une coupe moderne.",
-        "brand": "Uniqlo",
-        "category": "Clothes",
-        "colors": ["Noir", "Beige"],
-        "images": ["/assets/uploads/pants.jpg"]
-    },
-    {
-        "name": "Slim Fit Pants",
-        "price": 49.00,
-        "stock": 18,
-        "description": "Pantalon coupe slim avec finition élégante, idéal pour le bureau.",
-        "brand": "H&M",
-        "category": "Clothes",
-        "colors": ["Bleu marine"],
-        "images": ["/assets/uploads/pants2.jpg"]
-    },
-    {
-        "name": "Casual T-shirt",
-        "price": 25.00,
-        "stock": 35,
-        "description": "T-shirt confortable pour un look décontracté et stylé.",
-        "brand": "Pull&Bear",
-        "category": "Clothes",
-        "colors": ["Blanc", "Vert"],
-        "images": ["/assets/uploads/Tshirt.jpg"]
-    },
-    {
-        "name": "Smart Watch",
-        "price": 199.99,
-        "stock": 20,
-        "description": "Montre connectée avec suivi de santé, notifications, et GPS intégré.",
-        "brand": "Samsung",
-        "category": "Accessories",
-        "colors": ["Noir"],
-        "images": ["/assets/uploads/watches.jpg"]
+        "product_id": "687a3741d9cc94be00fd0a04",  # Remplace avec un ObjectId réel
+        "quantite_disponible": 20,
+        "emplacement": "Bizerte"
     }
 ]
 
-for product in products:
-    response = requests.post(BASE_URL, json=product, headers=headers)
-
-if response.status_code == 201:
-    print("✅ Produit ajouté avec succès")
-else:
-    print(f"Erreur {response.status_code}: {response.text}")
+for payload in payloads:
+    response = requests.post(f"{BASE_URL}/api/inventory/", headers=headers, json=payload)

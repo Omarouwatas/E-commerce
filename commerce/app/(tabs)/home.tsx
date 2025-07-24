@@ -28,7 +28,7 @@ interface Product {
   category?: string;
 }
 
-const categories = ['All', 'Phones', 'Accessories', 'Laptops', 'Electronics','Femmes','Hommes','Watches','Jackets','T-Shirts'];
+const categories = ['All', 'Phones', 'Accessories', 'Laptops', 'Shoes','Clothes','Jackets','T-Shirts'];
 
 export default function HomeScreen() {
   const router = useRouter()
@@ -106,18 +106,18 @@ export default function HomeScreen() {
           <Text style={styles.price}>{item.price} DA</Text>
           
           <View style={styles.colorRow}>
-            {item.colors?.slice(0, 4).map((color, i) => (
-              <View 
-                key={i} 
-                style={[
-                  styles.colorDot, 
-                  { backgroundColor: color }
-                ]} 
-              />
-            ))}
-            {item.colors?.length > 4 && (
-              <Text style={styles.moreColors}>+{item.colors.length - 4}</Text>
-            )}
+          {Array.isArray(item.colors) ? item.colors.slice(0, 4).map((color, i) => (
+  <View 
+    key={i} 
+    style={[
+      styles.colorDot, 
+      { backgroundColor: color }
+    ]} 
+  />
+)) : null}
+            {Array.isArray(item.colors) && item.colors.length > 4 && (
+  <Text style={styles.moreColors}>+{item.colors.length - 4}</Text>
+)}
           </View>
         </View>
       </View>
@@ -335,14 +335,18 @@ const styles = StyleSheet.create({
     marginHorizontal: '1%',
   },
   imageContainer: {
-    position: 'relative',
-    backgroundColor: '#F8F8F8',
-    height: '55%', // 55% de la hauteur de la carte pour l'image
+    backgroundColor: '#FFFFFF',
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E5E5', 
   },
   image: {
     width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+  height: '100%',
+  resizeMode: 'contain',
   },
   favoriteBtn: {
     position: 'absolute',

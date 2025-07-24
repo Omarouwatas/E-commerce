@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class User:
-    def __init__(self, nom, email, mot_de_passe, role="client", adresse="", telephone="", _id=None, date_inscription=None,favorites = []):
+    def __init__(self, nom, email, mot_de_passe, role="client", adresse="",stock=None,gouvernorat="", telephone="", _id=None, date_inscription=None,favorites = [], adresses=None):
         self._id = _id if _id else ObjectId()
         self.nom = nom
         self.email = email
@@ -14,6 +14,9 @@ class User:
         self.telephone = telephone
         self.date_inscription = date_inscription if date_inscription else datetime.utcnow()
         self.favorites = favorites
+        self.gouvernorat = gouvernorat                      
+        self.stock = stock or []
+        self.adresses = adresses or []
     def to_dict(self):
         return {
             "_id": self._id,
@@ -24,7 +27,10 @@ class User:
             "adresse": self.adresse,
             "telephone": self.telephone,
             "date_inscription": self.date_inscription,
-            "favorites": [] 
+            "gouvernorat": self.gouvernorat,                  
+            "stock": self.stock, 
+            "favorites": [],
+            "adresses": self.adresses,
         }
 
     @staticmethod
@@ -38,5 +44,9 @@ class User:
             telephone=data.get("telephone", ""),
             _id=data.get("_id"),
             date_inscription=data.get("date_inscription"),
-            favorites= data.get("favorites")
+            favorites= data.get("favorites"),
+            adresses=data.get("adresses", []),
+            gouvernorat=data.get("gouvernorat",""),       
+            stock=data.get("stock",[]), 
+
         )

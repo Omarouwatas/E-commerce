@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { BASE_URL } from '../../constants';
 const categoriesList = [
-  "Phones", "Accessories", "Laptops", "Tablets", "Chargers", "Watches", "Covers", "Headphones"
+  "Phones", "Accessories", "Laptops", "Clothes", "Chargers", "Watches", "Covers", "Headphones"
 ];
 
 export default function AddProductScreen() {
