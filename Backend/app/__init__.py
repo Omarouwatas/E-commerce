@@ -5,11 +5,11 @@ from .routes.products_routes import products_bp
 from app.routes.inventory_routes import inventory_bp
 from app.routes.cart_routes import cart_bp
 from app.routes.orders_routes import orders_bp
+from app.routes.stock_routes import stock_bp
 from flask_cors import CORS
 from flask import send_from_directory
 from app.routes.usersList import users_bp
 import os
-from app.routes.favorites_routes import favorites_bp
 
 def create_app():
     app = Flask(__name__, static_url_path='/assets', static_folder='assets')
@@ -23,7 +23,7 @@ def create_app():
     app.register_blueprint(products_bp, url_prefix="/api/products")
     app.register_blueprint(orders_bp, url_prefix="/api/orders")
     app.register_blueprint(users_bp, url_prefix="/api/users")
-    app.register_blueprint(favorites_bp, url_prefix="/api/favorites")
+    app.register_blueprint(stock_bp, url_prefix="/api/stock")
 
     @app.route("/", methods=["GET"])
     def index():

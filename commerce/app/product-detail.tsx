@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Dimensions, SafeAreaView
+  StyleSheet, ActivityIndicator, Dimensions, SafeAreaView, Alert
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
@@ -30,26 +30,13 @@ export default function ProductDetail() {
           Authorization: `Bearer ${token}`
         }
       });
+      Alert.alert("Succès", "Produit ajouté au panier !");
     } catch (err) {
       console.log("Erreur panier :", err);
     }
   };
   
-  const handleToggleFavorite = async () => {
-    const token = await AsyncStorage.getItem('token');
 
-    try {
-      await axios.post(`${BASE_URL}/api/favorites/toggle`, {
-        product_id: product._id
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    } catch (err) {
-      console.log("Erreur favoris :", err);
-    }
-  };
   
   const fetchProduct = async () => {
     try {
@@ -86,9 +73,6 @@ export default function ProductDetail() {
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconBtn}>
             <Text style={styles.icon}>⤴</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={handleToggleFavorite}>
-            <Text style={styles.icon}>♡</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -196,7 +180,6 @@ export default function ProductDetail() {
         </View>
       </ScrollView>
 
-      {/* Barre d'ajout au panier */}
       <View style={styles.bottomBar}>
         <View style={styles.quantityContainer}>
           <TouchableOpacity 
