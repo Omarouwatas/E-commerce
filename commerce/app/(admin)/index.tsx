@@ -1,9 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function AdminDashboard() {
   const router = useRouter();
-
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('token');
+    router.replace('/login');
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tableau de Bord Admin</Text>
@@ -19,9 +22,12 @@ export default function AdminDashboard() {
       <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/users')}>
         <Text style={styles.buttonText}>👤 Gérer les utilisateurs</Text>
       </TouchableOpacity>
-
+      
       <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/ManageSalesScreen')}>
-        <Text style={styles.buttonText}>📈 Historique des ventes</Text>
+        <Text style={styles.buttonText}>Gérer Les Commandes</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button,  styles.logout]} onPress={handleLogout}>
+      <Text style={[styles.buttonText, { color: '#fff' }]}> Se déconnecter</Text>
       </TouchableOpacity>
     </View>
   );
@@ -34,6 +40,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f9f9f9',
   },
+  logout: { backgroundColor: '#ff4444' },
   title: {
     fontSize: 24,
     fontWeight: 'bold',

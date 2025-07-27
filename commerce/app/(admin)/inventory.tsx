@@ -14,6 +14,7 @@ interface Product {
   colors: string[];
   brand?: string;
   category?: string;
+  quantity:number;
 }
 interface Inventaire{
 
@@ -74,11 +75,21 @@ export default function InventoryScreen() {
     }
 
     try {
-      await axios.post(`${BASE_URL}/api/inventory/movement`, {
+      console.log('Payload envoyé :', {
         product_id: selectedProduct._id,
         quantite: Number(quantity),
-        type_mouvement: type,
-        raison: reason
+        type_mouvement: type === 'ajout' ? 'entree' : 'sortie',
+        raison: reason,
+        emplacement: adminCity
+      });
+      
+      await axios.post(`${BASE_URL}/api/stock/movement`, {
+        product_id: selectedProduct._id,
+        quantite: Number(quantity),
+        type_mouvement: type === 'ajout' ? 'entree' : 'sortie',
+        raison: reason,
+          emplacement: adminCity
+
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -116,13 +127,34 @@ export default function InventoryScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📦 Inventaire - {adminCity || '...'}</Text>
+      <TouchableOpacity
+  style={{ backgroundColor: '#FFA500', padding: 12, borderRadius: 8, marginBottom: 16 }}
+  onPress={async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await axios.post(`${BASE_URL}/api/stock/resync-all-quantities`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      Alert.alert("✅ Synchronisation", res.data.msg || "Mise à jour effectuée");
+      fetchProducts();
+    } catch (err: any) {
+      console.error(err.response?.data || err.message);
+      Alert.alert("❌ Erreur", err.response?.data?.msg || "Impossible de synchroniser");
+    }
+  }}
+>
+  <Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'bold' }}>
+    🔁 Recalculer tous les stocks globaux
+  </Text>
+</TouchableOpacity>
       <FlatList
   data={ListProducts}
   keyExtractor={(item) => item._id}
   renderItem={({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text>Quantité en stock : {inventory[item._id] ?? 0}</Text>
+      <Text>Quantité en stock (locale) : {inventory[item._id] ?? 0}</Text>
+      <Text>Quantité totale : {item.quantity ?? 'Indisponible'}</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
@@ -135,6 +167,9 @@ export default function InventoryScreen() {
     </View>
   )}
 />
+
+
+
 
 
       <Modal visible={modalVisible} animationType="slide" transparent>
@@ -162,9 +197,13 @@ export default function InventoryScreen() {
                 <Text>Retrait</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.confirm} onPress={handleMovement}>
-              <Text style={styles.confirmText}>Valider</Text>
-            </TouchableOpacity>
+            <TouchableOpacity
+  style={[styles.confirm, (!quantity || !reason) && { opacity: 0.5 }]}
+  onPress={handleMovement}
+  disabled={!quantity || !reason}
+>
+  <Text style={styles.confirmText}>Valider</Text>
+</TouchableOpacity>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>Annuler</Text>
             </TouchableOpacity>

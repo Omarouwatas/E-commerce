@@ -4,6 +4,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson import ObjectId
 from app.extensions import mongo
 from datetime import datetime
+import os
+from flask import request, jsonify
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'uploads/factures'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 orders_bp = Blueprint("orders_bp", __name__)
 
@@ -118,7 +124,6 @@ def get_addresses():
 
     adresses = user.get("adresses", [])
     return jsonify(adresses), 200
-
 @orders_bp.route("/addresses", methods=["POST"])
 @jwt_required()
 def save_address():
@@ -142,30 +147,38 @@ def save_address():
 def confirmer_commande(commande_id):
     current_user_id = get_jwt_identity()
     current_user = mongo.db.users.find_one({"_id": ObjectId(current_user_id)})
-
     if not current_user:
         return jsonify({"msg": "Utilisateur non trouvé"}), 404
 
     commande = mongo.db.commandes.find_one({"_id": ObjectId(commande_id)})
-
     if not commande:
         return jsonify({"msg": "Commande introuvable"}), 404
 
     if commande.get("statut") == "confirmée":
         return jsonify({"msg": "Commande déjà confirmée"}), 400
-    admin_city = current_user.get("gouvernorat")             
+
+    admin_city = current_user.get("gouvernorat")
     if commande["adresse_livraison"]["gouvernorat"] != admin_city:
-        return jsonify({"msg":"Hors zone"}),403
+        return jsonify({"msg": "Hors zone"}), 403
+
     if str(commande["client_id"]) != str(current_user_id) and current_user.get("role") != "ADMIN":
         return jsonify({"msg": "Non autorisé à confirmer cette commande"}), 403
-    for p in commande["produits"]:                                         # + bloc
-        ok = mongo.db.inventaires.update_one(
-            {"admin_id":current_user_id,"items.product_id":p["product_id"],
-             "items.stock":{"$gte":p["quantite"]}},
-            {"$inc":{"items.$.stock":-p["quantite"]}}
+    for p in commande["produits"]:
+        stock_result = mongo.db.inventaires.find_one({
+            "product_id": p["product_id"],
+            "emplacement": admin_city
+        })
+        if not stock_result or stock_result.get("quantite_disponible", 0) < p["quantite"]:
+            return jsonify({"msg": f"Stock insuffisant pour le produit {p['nom']}"}), 400
+        mongo.db.inventaires.update_one(
+            {
+                "product_id": p["product_id"],
+                "emplacement": admin_city
+            },
+            {
+                "$inc": {"quantite_disponible": -p["quantite"]}
+            }
         )
-        if ok.modified_count==0:
-            return jsonify({"msg":"Stock insuffisant"}),400
     mongo.db.commandes.update_one(
         {"_id": ObjectId(commande_id)},
         {"$set": {
@@ -180,3 +193,45 @@ def confirmer_commande(commande_id):
     )
 
     return jsonify({"msg": "Commande confirmée avec succès"}), 200
+
+@orders_bp.route("/<order_id>/check-stock/", methods=["GET"])
+@jwt_required()
+def check_stock(order_id):
+    admin_id = get_jwt_identity()
+    admin = mongo.db.users.find_one({"_id": ObjectId(admin_id)})
+    gouvernorat = admin.get("gouvernorat")
+    
+    # ❗ Ici la correction
+    order = mongo.db.commandes.find_one({"_id": ObjectId(order_id)})
+    if not order:
+        return jsonify({"ok": False, "message": "Commande introuvable"}), 404
+
+    for item in order.get("produits", []): 
+        product_id = item["product_id"]
+        quantity_needed = item["quantite"]
+
+        inv = mongo.db.inventaires.find_one({
+            "product_id": product_id,
+            "emplacement": gouvernorat
+        })
+
+        if not inv or inv.get("quantite_disponible", 0) < quantity_needed:
+            return jsonify({"ok": False, "message": f"Stock insuffisant pour {product_id}"}), 400
+
+    return jsonify({"ok": True}), 200
+
+@orders_bp.route("/upload-facture/<commande_id>", methods=["POST"])
+@jwt_required()
+def upload_facture(commande_id):
+    if 'file' not in request.files:
+        return jsonify({"msg": "Aucun fichier reçu"}), 400
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(filepath)
+
+    mongo.db.commandes.update_one(
+        {"_id": ObjectId(commande_id)},
+        {"$set": {"facture_scan": filepath}}
+    )
+    return jsonify({"msg": "Facture uploadée"}), 200
