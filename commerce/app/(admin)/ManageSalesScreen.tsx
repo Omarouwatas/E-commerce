@@ -35,7 +35,15 @@ export default function ManageSalesScreen() {
   const confirmOrder = async (orderId: string) => {
     try {
       const token = await AsyncStorage.getItem('token');
-      await axios.put(`${BASE_URL}/api/orders/${orderId}/confirm`, {}, {
+        const check = await axios.get(`${BASE_URL}/api/orders/${orderId}/check-stock/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      if (!check.data.ok) {
+        Alert.alert("Stock insuffisant", check.data.message || "Impossible de confirmer la commande.");
+        return;
+      }
+        await axios.put(`${BASE_URL}/api/orders/${orderId}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       Alert.alert("✅", "Commande confirmée.");
@@ -44,6 +52,7 @@ export default function ManageSalesScreen() {
       Alert.alert("Erreur", "Confirmation échouée.");
     }
   };
+  
 
   useEffect(() => {
     fetchOrders();
@@ -74,8 +83,12 @@ export default function ManageSalesScreen() {
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>← Retour</Text>
       </TouchableOpacity>
-
-      <Text style={styles.pageTitle}>Gérer les ventes</Text>
+      <View style={styles.headerActions}>
+  <TouchableOpacity onPress={() => router.push('/ScanTicketScreen')} style={styles.scanButton}>
+    <Text style={styles.scanText}>📷 Scanner Ticket</Text>
+  </TouchableOpacity>
+</View>
+      <Text style={styles.pageTitle}>Gérer les commandes</Text>
       <FlatList
         data={orders}
         keyExtractor={item => item._id}
@@ -130,5 +143,18 @@ const styles = StyleSheet.create({
       color: '#333',
       fontWeight: 'bold',
     },
-  });
   
+  headerActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  scanButton: {
+    padding: 8,
+    backgroundColor: '#2196F3',
+    borderRadius: 6,
+  },
+  scanText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  }});
