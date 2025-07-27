@@ -17,10 +17,10 @@ def register():
     email = data["email"]
     password = data["password"]
     nom = data["nom"]
-    role = data.get("role", "client")  # par défaut = client
+    role = data.get("role", "client") 
     adresse = data.get("adresse", "")
     telephone = data.get("telephone", "")
-    gouvernorat = data.get("gouvernorat", "")  # 🆕 champs ville pour admin
+    gouvernorat = data.get("gouvernorat", "") 
     favorites = []
     adresses = []
     stock = []

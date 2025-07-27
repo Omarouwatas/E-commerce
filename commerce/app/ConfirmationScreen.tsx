@@ -4,6 +4,8 @@ import { useLocalSearchParams } from 'expo-router';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useRouter } from 'expo-router';
+import QRCode from 'react-native-qrcode-svg';
+
 export default function ReceiptScreen() {
   const { commande } = useLocalSearchParams();
   const order = commande ? JSON.parse(decodeURIComponent(commande)) : null;
@@ -71,6 +73,10 @@ export default function ReceiptScreen() {
 
           <Text style={styles.total}>Total TTC : {order.total} €</Text>
           <Text style={styles.date}>Date : {new Date(order.date_commande).toLocaleString()}</Text>
+          <View style={{ alignItems: 'center', marginTop: 30 }}>
+          <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>QR Code de validation :</Text>
+          <QRCode value={order._id} size={200} />
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={generatePdf}>
             <Text style={styles.buttonText}>📄 Télécharger le reçu (PDF)</Text>
@@ -78,6 +84,7 @@ export default function ReceiptScreen() {
           <TouchableOpacity>
             <Text style={styles.button} onPress={() => router.push('/(tabs)/home')}>Retour</Text>
           </TouchableOpacity>
+          
         </>
       ) : (
         <Text>Aucune commande à afficher.</Text>
