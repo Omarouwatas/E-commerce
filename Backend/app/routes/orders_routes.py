@@ -235,3 +235,15 @@ def upload_facture(commande_id):
         {"$set": {"facture_scan": filepath}}
     )
     return jsonify({"msg": "Facture uploadée"}), 200
+@orders_bp.route('/to-deliver/<gouvernorat>', methods=['GET'])
+@jwt_required()
+def get_orders_to_deliver(gouvernorat):
+    commandes = list(mongo.db.commandes.find({
+        "statut": "confirmée",
+        "adresse_livraison.gouvernorat": gouvernorat
+    }))
+
+    for commande in commandes:
+        commande['_id'] = str(commande['_id']) 
+
+    return jsonify(commandes), 200

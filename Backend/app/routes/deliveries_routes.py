@@ -1,6 +1,6 @@
 # deliveries_routes.py
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson.objectid import ObjectId
 from app import mongo
 
@@ -16,23 +16,26 @@ def get_orders():
     for order in orders:
         order["_id"] = str(order["_id"])
     return jsonify(orders), 200
-@delivery_bp.route("/scan", methods=["POST"])
+@delivery_bp.route("/<order_id>/valider-livraison", methods=["PUT"])
 @jwt_required()
-def valider_livraison():
-    data = request.get_json()
-    order_id = data.get("order_id")
-    code_produit = data.get("code_barre")
+def valider_livraison(order_id):
+    current_user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({"_id": ObjectId(current_user_id)})
 
-    order = mongo.db.commandes.find_one({"_id": ObjectId(order_id)})
+    if user["role"] != "livreur":
+        return jsonify({"msg": "Accès refusé"}), 403
+
+    order = mongo.db.orders.find_one({"_id": ObjectId(order_id)})
     if not order:
         return jsonify({"msg": "Commande introuvable"}), 404
 
-    produits = [p["product_id"] for p in order["produits"]]
-    if code_produit not in produits:
-        return jsonify({"msg": "Produit non reconnu dans cette commande"}), 400
+    if order["statut"] != "confirmee":
+        return jsonify({"msg": "La commande n'est pas encore prête à être livrée"}), 400
 
-    mongo.db.commandes.update_one(
+    mongo.db.orders.update_one(
         {"_id": ObjectId(order_id)},
-        {"$set": {"livraison_statut": "livré"}}
+        {"$set": {"statut": "livree", "date_livraison": datetime.utcnow()}}
     )
-    return jsonify({"msg": "Livraison confirmée"}), 200
+
+    return jsonify({"msg": "Commande marquée comme livrée"}), 200
+
