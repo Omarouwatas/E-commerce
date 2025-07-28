@@ -27,6 +27,9 @@ export default function LoginScreen() {
         router.replace('/(admin)'); 
         
       }
+      else if (role === 'LIVREUR') {
+        router.replace('/(livreur)'); 
+      }
       else{router.replace('/(tabs)/home');}
       setMsg('Connexion réussie');
     } catch (err) {
