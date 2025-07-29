@@ -16,7 +16,7 @@ def enregistrer_mouvement_stock():
     if not all(data.get(field) for field in required_fields):
         return jsonify({"msg": "Champs requis manquants"}), 400
 
-    product_id = str(data["product_id"])  # conversion explicite en string
+    product_id = str(data["product_id"]) 
     type_mouvement = data["type_mouvement"]
     quantite = int(data["quantite"])
     raison = data["raison"]

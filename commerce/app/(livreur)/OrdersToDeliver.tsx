@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { BASE_URL } from '@/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import BackButton from '@/components/BackButton';
 
 interface Order {
   _id: string;
@@ -74,9 +75,8 @@ export default function OrdersToDeliver() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>← Retour</Text>
-        </TouchableOpacity>
+    <BackButton />
+
     <View style={styles.container}>
       <Text style={styles.header}>Commandes à livrer</Text>
       <FlatList

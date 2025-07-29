@@ -1,6 +1,4 @@
-from flask import Flask, Flask, Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token
+from flask import Blueprint, request, jsonify
 from datetime import timedelta, datetime
 from app.extensions import mongo
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -12,10 +10,10 @@ users_bp =Blueprint("users_bp", __name__)
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_users():
-    current_user = get_current_user()
-    if current_user["role"] != "admin":
+    user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    if current_user["role"] != "ADMIN":
         return jsonify({"msg": "Non autorisé"}), 403
-
     users = list(mongo.db.users.find({}, {"password": 0}))  # pas de mdp
     for user in users:
         user["_id"] = str(user["_id"])
@@ -24,10 +22,10 @@ def get_users():
 @users_bp.route("/<user_id>", methods=["PUT"])
 @jwt_required()
 def update_user(user_id):
-    current_user = get_current_user()
+    user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if current_user["role"] != "ADMIN":
         return jsonify({"msg": "Non autorisé"}), 403
-
     data = request.json
     update_fields = {key: data[key] for key in ["name", "email", "role"] if key in data}
     mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update_fields})
@@ -35,10 +33,10 @@ def update_user(user_id):
 @users_bp.route("/<user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(user_id):
-    current_user = get_current_user()
-    if current_user["role"] != "admin":
+    user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    if current_user["role"] != "ADMIN":
         return jsonify({"msg": "Non autorisé"}), 403
-
     mongo.db.users.delete_one({"_id": ObjectId(user_id)})
     return jsonify({"msg": "Utilisateur supprimé"}), 200
 @users_bp.route('/me', methods=['GET'])

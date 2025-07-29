@@ -5,8 +5,9 @@ from bson import ObjectId
 from app.extensions import mongo
 from datetime import datetime
 import os
-from flask import request, jsonify
 from werkzeug.utils import secure_filename
+from app.utils.auth_utils import get_current_user
+
 
 UPLOAD_FOLDER = 'uploads/factures'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -105,9 +106,6 @@ def historique_commandes():
     current_user_id = get_jwt_identity()
     current_user = mongo.db.users.find_one({"_id": ObjectId(current_user_id)})
 
-    if not current_user or current_user.get("role") != "ADMIN":
-        return jsonify({"msg": "Non autorisé"}), 403
-
     commandes = list(mongo.db.commandes.find({"statut": "confirmée"}))
     for c in commandes:
         c["_id"] = str(c["_id"])
@@ -200,8 +198,6 @@ def check_stock(order_id):
     admin_id = get_jwt_identity()
     admin = mongo.db.users.find_one({"_id": ObjectId(admin_id)})
     gouvernorat = admin.get("gouvernorat")
-    
-    # ❗ Ici la correction
     order = mongo.db.commandes.find_one({"_id": ObjectId(order_id)})
     if not order:
         return jsonify({"ok": False, "message": "Commande introuvable"}), 404
@@ -247,3 +243,14 @@ def get_orders_to_deliver(gouvernorat):
         commande['_id'] = str(commande['_id']) 
 
     return jsonify(commandes), 200
+
+@orders_bp.route("/<commande_id>", methods=["GET"])
+@jwt_required()
+def get_commande_by_id(commande_id):
+    commande = mongo.db.commandes.find_one({"_id": ObjectId(commande_id)})
+    if not commande:
+        return jsonify({"msg": "Commande introuvable"}), 404
+
+    commande["_id"] = str(commande["_id"])
+    commande["client_id"] = str(commande["client_id"])
+    return jsonify(commande), 200

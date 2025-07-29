@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import { useRouter } from 'expo-router';
+import BackButton from '@/components/BackButton';
 
 export default function PaymentScreen() {
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
@@ -56,6 +57,8 @@ export default function PaymentScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <BackButton />
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Adresse de livraison</Text>
       {selectedAddress ? (
@@ -89,6 +92,7 @@ export default function PaymentScreen() {
         <Text style={styles.orderText}>Créer la commande</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
