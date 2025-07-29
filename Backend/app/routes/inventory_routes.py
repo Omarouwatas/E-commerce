@@ -24,21 +24,21 @@ def add_or_update_inventory():
             "date_ajout": datetime.utcnow()
         }
     }
-    mongo.db.inventaire.update_one(query, update, upsert=True)
-    return jsonify({"msg": "Inventaire mis à jour"}), 200
+    mongo.db.inventaires.update_one(query, update, upsert=True)
+    return jsonify({"msg": "inventaires mis à jour"}), 200
 
 @inventory_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_all_inventory():
-    inventaire = list(mongo.db.inventaire.find())
-    for i in inventaire:
+    inventaires = list(mongo.db.inventaires.find())
+    for i in inventaires:
         i["_id"] = str(i["_id"])
-    return jsonify(inventaire), 200
+    return jsonify(inventaires), 200
 
 @inventory_bp.route("/produit/<product_id>", methods=["GET"])
 @jwt_required()
 def get_product_inventory(product_id):
-    inv = list(mongo.db.inventaire.find({"product_id": product_id}))
+    inv = list(mongo.db.inventaires.find({"product_id": product_id}))
     for i in inv:
         i["_id"] = str(i["_id"])
     return jsonify(inv), 200
@@ -54,7 +54,7 @@ def get_my_inventory():
     emplacement = admin.get("gouvernorat", "")
     if not emplacement:
         return jsonify({"msg": "Adresse (ville) de l'admin manquante"}), 400
-    inventory = list(mongo.db.inventaire.find({"emplacement": emplacement}))
+    inventory = list(mongo.db.inventaires.find({"emplacement": emplacement}))
     for item in inventory:
         item["_id"] = str(item["_id"])
         item["product_id"] = str(item["product_id"])
@@ -77,7 +77,7 @@ def set_stock():
 @jwt_required()
 def get_inventory_by_city(city):
     # Recherche tous les stocks dans la ville spécifiée
-    stock = list(mongo.db.inventaire.find({"emplacement": city}))
+    stock = list(mongo.db.inventaires.find({"emplacement": city}))
     
     for item in stock:
         item["_id"] = str(item["_id"])
@@ -102,7 +102,7 @@ def stock_movement():
         return jsonify({"msg": "Access denied"}), 403
 
     gouvernorat = admin.get("adresse", "inconnu")
-    inventory_entry = mongo.db.inventaire.find_one({
+    inventory_entry = mongo.db.inventaires.find_one({
         "product_id": product_id,
         "emplacement": gouvernorat
     })
@@ -116,12 +116,12 @@ def stock_movement():
             "emplacement": gouvernorat,
             "date_ajout": datetime.utcnow()
         }
-        mongo.db.inventaire.insert_one(inventory_entry)
+        mongo.db.inventaires.insert_one(inventory_entry)
     else:
         nouvelle_qte = inventory_entry["quantite_disponible"] + quantite if type_mouvement == "in" else inventory_entry["quantite_disponible"] - quantite
         if nouvelle_qte < 0:
             return jsonify({"msg": "Stock insuffisant"}), 400
-        mongo.db.inventaire.update_one(
+        mongo.db.inventaires.update_one(
             {"_id": inventory_entry["_id"]},
             {"$set": {"quantite_disponible": nouvelle_qte}}
         )
@@ -136,7 +136,7 @@ def stock_movement():
     }
     mongo.db.mouvements_stock.insert_one(mouvement)
 
-    total_stock = mongo.db.inventaire.aggregate([
+    total_stock = mongo.db.inventaires.aggregate([
         {"$match": {"product_id": product_id}},
         {"$group": {"_id": "$product_id", "total": {"$sum": "$quantite_disponible"}}}
     ])

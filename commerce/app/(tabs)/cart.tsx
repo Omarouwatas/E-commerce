@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator, Button, ImageBackground, SafeAreaView } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
 import { getToken } from '@/utils/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useRouter } from 'expo-router';
+import { useNavigation } from 'expo-router';
+import { useLayoutEffect } from 'react';
 
 export default function CartScreen() {
+  const navigation = useNavigation();
+
+useLayoutEffect(() => {
+  navigation.setOptions({ headerShown: false });
+}, []);
+
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const fetchCart = async () => {
@@ -74,7 +82,6 @@ export default function CartScreen() {
             />
           </View>
         )}
-        
         <View style={styles.productInfo}>
           <Text style={styles.productName}>
             {item.product ? item.product.name : "Produit inconnu"}
@@ -85,7 +92,6 @@ export default function CartScreen() {
               <Text style={styles.quantityLabel}>Qté:</Text>
               <Text style={styles.quantityValue}>{item.quantite}</Text>
             </View>
-            
             {item.product?.price && (
               <Text style={styles.priceText}>
                 {(item.product.price * item.quantite).toFixed(2)} €
@@ -105,6 +111,11 @@ export default function CartScreen() {
   );
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
+
+    <ImageBackground source={require('../../assets/images/logo.png')} 
+    style={styles.backgroundImage}
+    resizeMode="cover">
     <View style={styles.wrapper}>
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -148,6 +159,8 @@ export default function CartScreen() {
         </>
       )}
     </View>
+    </ImageBackground>
+    </SafeAreaView>
   );
 }
 
@@ -197,7 +210,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   header: {
     paddingTop: 20,
     paddingHorizontal: 20,

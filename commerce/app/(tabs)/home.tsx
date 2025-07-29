@@ -1,14 +1,14 @@
 // app/(tabs)/home.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   View, Text, FlatList, Image, TouchableOpacity,
-  StyleSheet, ActivityIndicator, ScrollView, Alert, Dimensions
+  StyleSheet, ActivityIndicator, ScrollView, Alert, Dimensions,ImageBackground, SafeAreaView
 } from 'react-native';
 import debounce from 'lodash.debounce';
 
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -31,6 +31,7 @@ interface Product {
 const categories = ['All', 'Phones', 'Accessories', 'Laptops', 'Shoes','Clothes','Jackets','T-Shirts'];
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -69,27 +70,33 @@ export default function HomeScreen() {
     }
     setLoading(false);
   };
-
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, []);
   useEffect(() => {
     fetchProducts(true);
   }, [selectedCategory]);
-  const handleSearch = debounce(async (text: string) => {
-    setSearchQuery(text);
-    if (text.trim() === '') {
-      setIsSearching(false);
-      setSearchResults([]);
-      fetchProducts(true);
-      return;
-    }
-    setIsSearching(true);
-    try {
-      const res = await axios.get(`${BASE_URL}/api/products/search?q=${text}`);
-      setSearchResults(res.data);
-    } catch {
-      Alert.alert('Erreur', 'Échec de la recherche');
-    }
+const searchProducts = async (text: string) => {
+  setSearchQuery(text);
+  if (text.trim() === '') {
     setIsSearching(false);
-  }, 300);
+    setSearchResults([]);
+    fetchProducts(true);
+    return;
+  }
+
+  setIsSearching(true);
+  try {
+    const res = await axios.get(`${BASE_URL}/api/products/search?q=${encodeURIComponent(text)}`);
+    setSearchResults(res.data);
+  } catch {
+    Alert.alert('Erreur', 'Échec de la recherche');
+  }
+  setIsSearching(false);
+};
+
+const debouncedSearch = useCallback(debounce(searchProducts, 300), []);
+
   
   const renderProduct = ({ item }: { item: Product }) => (
     <TouchableOpacity 
@@ -125,7 +132,12 @@ export default function HomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
+
+    <ImageBackground source={require('../../assets/images/logo.png')} 
+    style={styles.backgroundImage}
+    resizeMode="cover">
+    
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Découvrir</Text>
         <Text style={styles.headerSubtitle}>Trouvez vos produits préférés</Text>
@@ -146,13 +158,14 @@ export default function HomeScreen() {
   placeholder="Rechercher un produit"
   value={searchQuery}
   style={{
-    padding: 12,
+    paddingVertical: 6,
+paddingHorizontal: 12,
+marginVertical: 4,
+fontSize: 14,
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    marginVertical: 10,
-    fontSize: 16,
   }}
-  onChangeText={handleSearch}
+  onChangeText={debouncedSearch}
 />
 
     </View>
@@ -236,11 +249,18 @@ export default function HomeScreen() {
           ) : null
         }
       />
-    </View>
+  
+    </ImageBackground>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -270,8 +290,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterBtn: {
-    paddingHorizontal: screenWidth * 0.05, // ~20px
-    paddingVertical: screenHeight * 0.012, // ~10px
+    minWidth: '22%', 
+paddingVertical: '2%',
+paddingHorizontal: '4%',
     borderRadius: screenWidth * 0.05, // ~20px
     marginRight: screenWidth * 0.025, // ~10px
     backgroundColor: '#F2F2F2',
@@ -279,7 +300,6 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: screenWidth * 0.15, // ~60px
     height: screenHeight * 0.05, // Hauteur fixe pour uniformité
   },
   activeFilter: {

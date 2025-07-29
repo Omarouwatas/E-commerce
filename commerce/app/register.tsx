@@ -65,7 +65,7 @@ const RegisterScreen = () => {
     setSubmitError('');
 
     try {
-      const response = await axios.post('${BASE_URL}/api/auth/register', {
+      const response = await axios.post(`${BASE_URL}/api/auth/register`, {
         nom: formData.nom,
         email: formData.email,
         password: formData.password,
