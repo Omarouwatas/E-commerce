@@ -18,7 +18,7 @@ interface User {
   
 export default function UserManagementScreen() {
     const [users, setUsers] = useState<User[]>([]);
-
+    const router = useRouter();
 
   const fetchUsers = async () => {
     try {
@@ -84,8 +84,8 @@ export default function UserManagementScreen() {
             <View style={styles.row}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => handleRoleChange(item._id, item.role === 'client' ? 'admin' : 'client')}>
-                <Text style={styles.buttonText}>Changer Rôle</Text>
+                onPress={() => router.push('/historiqueClient')}>
+                <Text style={styles.buttonText}>Historique des ventes</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from flask import current_app, send_from_directory
 UPLOAD_FOLDER = os.path.join("assets", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
-BASE_URL = "http://172.20.10.3:5000"
+BASE_URL = "http://172.20.10.4:5000"
 def serialize_product(product):
     product["_id"] = str(product["_id"])
     product["images"] = [
@@ -221,8 +221,6 @@ def search_products():
         return jsonify([])
 
     all_products = list(mongo.db.products.find())
-    
-    # Mapping: nom → produit
     name_to_product = {p["name"].lower(): p for p in all_products}
     product_names = list(name_to_product.keys())
 

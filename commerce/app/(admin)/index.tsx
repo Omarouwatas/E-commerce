@@ -26,14 +26,29 @@ export default function AdminDashboard() {
       <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/ManageSalesScreen')}>
         <Text style={styles.buttonText}>Gérer Les Commandes</Text>
       </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => router.push('/(admin)/pos')}
+      >
+        <Text style={styles.btnText}>Interface de vente</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => router.push('livreursScreen')}
+      >
+        <Text style={styles.btnText}>Gestion des livreurs</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={[styles.button,  styles.logout]} onPress={handleLogout}>
       <Text style={[styles.buttonText, { color: '#fff' }]}> Se déconnecter</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
+  btn: { backgroundColor: '#00C851', padding: 16, borderRadius: 8, marginVertical: 8 },
+  btnText: { color: '#fff', fontSize: 16, textAlign: 'center' },
   container: {
     flex: 1,
     justifyContent: 'center',
