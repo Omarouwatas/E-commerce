@@ -63,7 +63,7 @@ export default function AddressScreen() {
         <TouchableOpacity
           key={index}
           style={styles.addressCard}
-          onPress={() => handleSelectAddress(address)} // ✅ Ici on passe bien l'adresse !
+          onPress={() => handleSelectAddress(address)} 
         >
           <Text style={styles.label}>{address.label}</Text>
           <Text>{address.nom}</Text>

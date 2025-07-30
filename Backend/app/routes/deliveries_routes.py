@@ -23,7 +23,7 @@ def valider_livraison(order_id):
     current_user_id = get_jwt_identity()
     user = mongo.db.users.find_one({"_id": ObjectId(current_user_id)})
 
-    if user["role"] != "livreur":
+    if user["role"] != "LIVREUR":
         return jsonify({"msg": "Accès refusé"}), 403
 
     order = mongo.db.orders.find_one({"_id": ObjectId(order_id)})
@@ -157,23 +157,119 @@ def get_all_livreurs():
         l['status'] = l.get('status', 'inconnu')
 
     return jsonify(livreurs), 200
-@delivery_bp.route('/livreurs/<livreur_id>/status', methods=['PUT'])
+from datetime import datetime
+@delivery_bp.route('/status', methods=['PUT'])
 @jwt_required()
-def update_livreur_status(livreur_id):
-    user = mongo.db.users.find_one({"_id": ObjectId(get_jwt_identity())})
-    if not user or user["role"] != "admin":
-        return jsonify({"msg": "Accès refusé"}), 403
-
+def update_livreur_status():
+    user_id = get_jwt_identity()
     data = request.get_json()
-    new_status = data.get("status")
-    if new_status not in ["actif", "occupé", "hors_ligne", "indisponible"]:
+    nouveau_status = data.get("status")
+
+    if nouveau_status not in ["disponible", "hors_ligne"]:
         return jsonify({"msg": "Statut invalide"}), 400
 
-    result = mongo.db.users.update_one(
-        {"_id": ObjectId(livreur_id), "role": "LIVREUR"},
-        {"$set": {"status": new_status}}
-    )
-    if result.matched_count == 0:
-        return jsonify({"msg": "Livreur non trouvé"}), 404
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    if not user or user.get("role", "").lower() != "livreur":
+        return jsonify({"msg": "Non autorisé"}), 403
 
-    return jsonify({"msg": "Statut mis à jour"}), 200
+    mongo.db.users.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"status": nouveau_status}}
+    )
+
+    return jsonify({"msg": f"Statut mis à jour vers {nouveau_status}"}), 200
+@delivery_bp.route('/assign/<order_id>', methods=['PUT'])
+@jwt_required()
+def assign_livreur(order_id):
+    data = request.get_json()
+    livreur_id = data.get("livreur_id")
+
+    if not livreur_id:
+        return jsonify({"msg": "Livreur ID manquant"}), 400
+
+    order = mongo.db.commandes.find_one({"_id": ObjectId(order_id)})
+    if not order or order.get("statut") != "confirmee":
+        return jsonify({"msg": "Commande invalide ou non confirmée"}), 400
+
+    mongo.db.commandes.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {
+            "statut": "en_attente_acceptation",
+            "livreur_id": ObjectId(livreur_id)
+        }}
+    )
+
+    return jsonify({"msg": "Commande assignée en attente d'acceptation"}), 200
+@delivery_bp.route('/accept/<order_id>', methods=['PUT'])
+@jwt_required()
+def accept_order(order_id):
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+
+    if not user or user.get('role', '').lower() != 'livreur':
+        return jsonify({'msg': 'Accès non autorisé'}), 403
+
+    order = mongo.db.commandes.find_one({'_id': ObjectId(order_id)})
+    if not order:
+        return jsonify({'msg': 'Commande introuvable'}), 404
+
+    if order.get('statut') != 'confirmee':
+        return jsonify({'msg': 'Commande déjà traitée ou non valide'}), 400
+
+    # Créer un enregistrement livraison
+    livraison = {
+        'order_id': order_id,
+        'livreur_id': str(user['_id']),
+        'status': 'en_cours_de_livraison',
+        'created_at': datetime.utcnow()
+    }
+    mongo.db.livraisons.insert_one(livraison)
+
+    mongo.db.commandes.update_one(
+        {'_id': ObjectId(order_id)},
+        {'$set': {'statut': 'en_cours_de_livraison'}}
+    )
+
+    return jsonify({'msg': 'Commande acceptée pour livraison'}), 200
+@delivery_bp.route('/refuse/<order_id>', methods=['PUT'])
+@jwt_required()
+def refuse_order(order_id):
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+
+    if not user or user.get('role', '').lower() != 'livreur':
+        return jsonify({'msg': 'Accès non autorisé'}), 403
+
+    mongo.db.livraisons.delete_one({
+        'order_id': order_id,
+        'livreur_id': str(user['_id'])
+    })
+
+    mongo.db.commandes.update_one(
+        {'_id': ObjectId(order_id)},
+        {'$set': {'statut': 'confirmee'}}
+    )
+
+    return jsonify({'msg': 'Commande refusée'}), 200
+@delivery_bp.route('/track/<order_id>', methods=['GET'])
+@jwt_required()
+def admin_track_livreur(order_id):
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    
+    if not user or user['role'].lower() != 'admin':
+        return jsonify({'msg': 'Non autorisé'}), 403
+
+    livraison = mongo.db.Livraisons.find_one({'order_id': order_id})
+    if not livraison:
+        return jsonify({'msg': 'Livraison non trouvée'}), 404
+
+    livreur = mongo.db.users.find_one({'_id': livraison['livreur_id']}, {'mot_de_passe': 0})
+
+    return jsonify({
+        'location': livraison.get('location'),
+        'livreur': {
+            'nom': livreur.get('nom'),
+            'telephone': livreur.get('telephone')
+        }
+    }), 200

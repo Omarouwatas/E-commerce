@@ -7,18 +7,21 @@ from app.routes.cart_routes import cart_bp
 from app.routes.orders_routes import orders_bp
 from app.routes.stock_routes import stock_bp
 from app.routes.sales_routes import sales_bp
-
+from app.routes.predict import predict_bp
 from flask_cors import CORS
 from flask import send_from_directory
 from app.routes.usersList import users_bp
 import os
 from app.routes.deliveries_routes import delivery_bp
+
 def create_app():
     app = Flask(__name__, static_url_path='/assets', static_folder='assets')
     CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     app.config.from_object("app.config.Config")
     mongo.init_app(app)
     jwt.init_app(app)
+    app.register_blueprint(predict_bp)
+
     app.register_blueprint(cart_bp, url_prefix="/api/cart")
     app.register_blueprint(inventory_bp, url_prefix="/api/inventory")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
