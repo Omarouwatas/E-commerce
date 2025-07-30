@@ -1,84 +1,84 @@
-// app/(admin)/LivreursScreen.tsx
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView,
-  TouchableOpacity, TextInput
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  ActivityIndicator,
+  TouchableOpacity
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { BASE_URL } from '@/constants';
 import { useRouter } from 'expo-router';
-
-interface Livreur {
-  _id: string;
-  nom: string;
-  telephone: string;
-  gouvernorat: string;
-  status?: string;
-}
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '@/constants';
 
 export default function LivreursScreen() {
-  const [livreurs, setLivreurs] = useState<Livreur[]>([]);
-  const [filtered, setFiltered] = useState<Livreur[]>([]);
-  const [gouvernorat, setGouvernorat] = useState('');
+  const [adminCity, setAdminCity] = useState('');
+  const [livreurs, setLivreurs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchLivreurs = async () => {
-      const token = await AsyncStorage.getItem('token');
-      try {
-        const res = await axios.get(`${BASE_URL}/api/livreurs`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setLivreurs(res.data);
-        setFiltered(res.data);
-      } catch (err) {
-        console.error('Erreur lors du chargement des livreurs :', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLivreurs();
-  }, []);
-
-  const filterByGouvernorat = (value: string) => {
-    setGouvernorat(value);
-    setFiltered(
-      livreurs.filter(l => l.gouvernorat.toLowerCase().includes(value.toLowerCase()))
-    );
+  const fetchAdminCity = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const res = await axios.get(`${BASE_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setAdminCity(res.data.gouvernorat);
+    return res.data.gouvernorat;
   };
 
-  const renderItem = ({ item }: { item: Livreur }) => (
+  const fetchLivreurs = async (city: string) => {
+    const token = await AsyncStorage.getItem("token");
+    try {
+      const res = await axios.get(`${BASE_URL}/api/delivery/livreurs?city=${city}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setLivreurs(res.data);
+    } catch {
+      alert("Erreur lors du chargement des livreurs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdminCity().then(city => fetchLivreurs(city));
+  }, []);
+
+  const renderItem = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.nom}</Text>
+      <Text>Email : {item.email}</Text>
       <Text>Téléphone : {item.telephone}</Text>
-      <Text>Gouvernorat : {item.gouvernorat}</Text>
-      <Text>Statut : {item.status || 'inconnu'}</Text>
+      <Text>Status : <Text style={{ fontWeight: 'bold', color: item.status === 'disponible' ? 'green' : item.status === 'occupee' ? 'orange' : 'gray' }}>{item.status}</Text></Text>
+
+      {item.status === 'occupee' && item.order_id && (
+        <TouchableOpacity
+          style={styles.trackButton}
+          onPress={() => router.push(`/adminTrack?order_id=${item.order_id}`)}
+        >
+          <Text style={styles.trackText}>📍 Suivre le livreur</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backText}>Retour</Text>
+        <Text style={styles.backText}>← Retour</Text>
       </TouchableOpacity>
-      <Text style={styles.title}>📦 Livreurs par Gouvernorat</Text>
 
-      <TextInput
-        placeholder="Filtrer par gouvernorat"
-        style={styles.input}
-        value={gouvernorat}
-        onChangeText={filterByGouvernorat}
-      />
-
+      <Text style={styles.header}>Livreurs de {adminCity}</Text>
       {loading ? (
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#00C851" />
       ) : (
         <FlatList
-          data={filtered}
+          data={livreurs}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
+          ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>Aucun livreur trouvé.</Text>}
         />
       )}
     </SafeAreaView>
@@ -87,29 +87,35 @@ export default function LivreursScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12, textAlign: 'center' },
+  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
   card: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f9f9',
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 12
+    padding: 16,
+    marginBottom: 12,
+    elevation: 2,
   },
-  name: { fontSize: 18, fontWeight: '600' },
-  input: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ccc'
+  name: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   backButton: {
-    marginBottom: 10,
-    alignSelf: 'flex-start',
-    backgroundColor: '#ddd',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
+    marginBottom: 10
   },
-  backText: { fontWeight: 'bold' }
+  backText: {
+    fontSize: 16,
+    color: '#007AFF'
+  },
+  trackButton: {
+    marginTop: 10,
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center'
+  },
+  trackText: {
+    color: '#fff',
+    fontWeight: 'bold'
+  }
 });

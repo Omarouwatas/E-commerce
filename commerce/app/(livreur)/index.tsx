@@ -1,15 +1,40 @@
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Alert } from 'react-native';
+import { BASE_URL } from '@/constants';
+import axios from 'axios';
 
 export default function LivreurDashboard() {
   const router = useRouter();
+  const [status, setStatus] = useState('chargement...');
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     router.replace('/login');
   };
+  const fetchStatus = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const res = await axios.get(`${BASE_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setStatus(res.data.status || 'hors_ligne');
+  };
+  const toggleStatus = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const nouveauStatus = status === 'disponible' ? 'hors_ligne' : 'disponible';
+    try {
+      await axios.put(`${BASE_URL}/api/delivery/status`, { status: nouveauStatus }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStatus(nouveauStatus);
+    } catch (error) {
+      Alert.alert("Erreur", "Impossible de changer le statut");
+    }
+  };
+  useEffect(() => {
+    fetchStatus();
+  }, []);
 
   return (
     <ImageBackground
@@ -18,8 +43,14 @@ export default function LivreurDashboard() {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>Tableau de Bord Livreur</Text>
+      <Text style={styles.title}>Mon Statut</Text>
+      <Text style={styles.statusText}>{status}</Text>
 
+      <TouchableOpacity style={styles.button} onPress={toggleStatus}>
+        <Text style={styles.buttonText}>
+          Passer en {status === 'disponible' ? 'hors ligne' : 'disponible'}
+        </Text>
+      </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/(livreur)/OrdersToDeliver')}>
           <Text style={styles.buttonText}>Commandes à livrer</Text>
         </TouchableOpacity>
@@ -42,6 +73,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  statusText: { fontSize: 18, marginBottom: 40, textAlign: 'center' },
+
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(255,255,255,0.85)',

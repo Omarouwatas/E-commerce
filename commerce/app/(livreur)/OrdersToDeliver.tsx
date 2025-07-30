@@ -49,6 +49,34 @@ export default function OrdersToDeliver() {
     }
   };
 
+  const handleAccept = async (orderId: string) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.put(`${BASE_URL}/api/delivery/accept/${orderId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      Alert.alert("✅", "Commande acceptée avec succès");
+      fetchOrders();
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Erreur", "Échec de l'acceptation de la commande");
+    }
+  };
+
+  const handleRefuse = async (orderId: string) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.put(`${BASE_URL}/api/delivery/refuse/${orderId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      Alert.alert("❌", "Commande refusée");
+      fetchOrders();
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Erreur", "Échec du refus de la commande");
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -70,22 +98,31 @@ export default function OrdersToDeliver() {
       >
         <Text style={styles.buttonText}>Voir reçu</Text>
       </TouchableOpacity>
+
+      <View style={styles.actionRow}>
+        <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item._id)}>
+          <Text style={styles.buttonText}>✅ Accepter</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.refuseButton} onPress={() => handleRefuse(item._id)}>
+          <Text style={styles.buttonText}>❌ Refuser</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <BackButton />
+      <BackButton />
 
-    <View style={styles.container}>
-      <Text style={styles.header}>Commandes à livrer</Text>
-      <FlatList
-        data={orders}
-        keyExtractor={(item) => item._id}
-        renderItem={renderItem}
-        ListEmptyComponent={<Text style={{ textAlign: 'center' }}>Aucune commande disponible</Text>}
-      />
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.header}>Commandes à livrer</Text>
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          ListEmptyComponent={<Text style={{ textAlign: 'center' }}>Aucune commande disponible</Text>}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -109,17 +146,25 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center'
   },
-  backButton: {
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 10,
-    backgroundColor: '#00c853',
+    gap: 8
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 6,
     alignItems: 'center'
   },
-  backText: {
-    fontSize: 16,
-    color: '#007AFF',
-    fontWeight: 'bold',
+  refuseButton: {
+    flex: 1,
+    backgroundColor: '#d32f2f',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center'
   },
   buttonText: { color: '#fff', fontWeight: 'bold' }
 });
