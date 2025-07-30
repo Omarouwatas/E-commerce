@@ -58,6 +58,12 @@ def login():
         return jsonify({"msg": "Invalid credentials"}), 401
 
     access_token = create_access_token(identity=str(user["_id"]), expires_delta=timedelta(hours=24))
+    if user['role'].upper() == 'LIVREUR':
+        mongo.db.users.update_one(
+            {'_id': user['_id']},
+            {'$set': {'status': 'disponible'}}
+        )
+
     return jsonify({
         "access_token": access_token,
         "nom": user.get("nom"),

@@ -1,12 +1,14 @@
+// app/(admin)/ManageSalesScreen.tsx
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet, Alert
+  View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 import { BASE_URL } from '../../constants';
+
 interface Order {
   _id: string;
   client_id: string;
@@ -18,6 +20,7 @@ interface Order {
 
 export default function ManageSalesScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const fetchOrders = async () => {
@@ -29,36 +32,41 @@ export default function ManageSalesScreen() {
       setOrders(res.data);
     } catch (err) {
       Alert.alert("Erreur", "Impossible de charger les ventes.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const confirmOrder = async (orderId: string) => {
     try {
       const token = await AsyncStorage.getItem('token');
-        const check = await axios.get(`${BASE_URL}/api/orders/${orderId}/check-stock/`, {
+      const check = await axios.get(`${BASE_URL}/api/orders/${orderId}/check-stock/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-  
+
       if (!check.data.ok) {
         Alert.alert("Stock insuffisant", check.data.message || "Impossible de confirmer la commande.");
         return;
       }
-        await axios.put(`${BASE_URL}/api/orders/${orderId}/confirm`, {}, {
+      await axios.put(`${BASE_URL}/api/orders/${orderId}/confirm`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       Alert.alert("✅", "Commande confirmée.");
       fetchOrders();
     } catch (err) {
-      Alert.alert("Erreur", "Confirmation échouée.");
+      Alert.alert("Erreur", "Stock est insuffisant.");
     }
   };
-  
+
+  const goToAssignLivreur = (orderId: string) => {
+    router.push({ pathname: '/livreursScreen', params: { orderId } });
+  };
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({ item }: { item: Order }) => (
     <View style={styles.card}>
       <Text style={styles.title}>Commande</Text>
       <Text>Client ID : {item.client_id}</Text>
@@ -75,6 +83,15 @@ export default function ManageSalesScreen() {
           <Text style={styles.confirmButtonText}>✅ Confirmer</Text>
         </TouchableOpacity>
       )}
+
+      {item.statut === "confirmee" && (
+        <TouchableOpacity
+          style={styles.assignButton}
+          onPress={() => goToAssignLivreur(item._id)}
+        >
+          <Text style={styles.confirmButtonText}>🚚 Affecter à un livreur</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -84,66 +101,77 @@ export default function ManageSalesScreen() {
         <Text style={styles.backText}>← Retour</Text>
       </TouchableOpacity>
       <View style={styles.headerActions}>
-  <TouchableOpacity onPress={() => router.push('/ScanTicketScreen')} style={styles.scanButton}>
-    <Text style={styles.scanText}>📷 Scanner Ticket</Text>
-  </TouchableOpacity>
-</View>
+        <TouchableOpacity onPress={() => router.push('/ScanTicketScreen')} style={styles.scanButton}>
+          <Text style={styles.scanText}>📷 Scanner Ticket</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.pageTitle}>Gérer les commandes</Text>
-      <FlatList
-        data={orders}
-        keyExtractor={item => item._id}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#00C851" />
+      ) : (
+        <FlatList
+          data={orders}
+          keyExtractor={item => item._id}
+          renderItem={renderItem}
+        />
+      )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-    container: {
-      padding: 16,
-      backgroundColor: '#fff',
-      flex: 1,
-    },
-    pageTitle: {
-      fontSize: 22,
-      fontWeight: 'bold',
-      marginBottom: 16,
-    },
-    card: {
-      backgroundColor: '#f9f9f9',
-      borderRadius: 10,
-      padding: 15,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: '#ddd',
-    },
-    title: {
-      fontWeight: 'bold',
-      marginBottom: 6,
-      fontSize: 16,
-    },
-    confirmButton: {
-      marginTop: 10,
-      backgroundColor: '#4CAF50',
-      padding: 10,
-      borderRadius: 6,
-      alignItems: 'center',
-    },
-    confirmButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    backButton: {
-      marginBottom: 10,
-      padding: 8,
-      backgroundColor: '#eee',
-      borderRadius: 6,
-      alignSelf: 'flex-start',
-    },
-    backText: {
-      color: '#333',
-      fontWeight: 'bold',
-    },
-  
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  pageTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  card: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 6,
+    fontSize: 16,
+  },
+  confirmButton: {
+    marginTop: 10,
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  assignButton: {
+    marginTop: 10,
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  backButton: {
+    marginBottom: 10,
+    padding: 8,
+    backgroundColor: '#eee',
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  backText: {
+    color: '#333',
+    fontWeight: 'bold',
+  },
   headerActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -157,4 +185,5 @@ const styles = StyleSheet.create({
   scanText: {
     color: '#fff',
     fontWeight: 'bold',
-  }});
+  }
+});
