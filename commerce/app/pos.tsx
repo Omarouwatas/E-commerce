@@ -9,6 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
 import { useRouter } from 'expo-router';
 import * as Print from 'expo-print';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BackButton from '@/components/BackButton';
 
 interface Product {
   _id: string;
@@ -112,6 +114,8 @@ export default function POSScreen() {
   };
 
   return (
+    <SafeAreaView style = {{flex : 1}}>
+      <BackButton></BackButton>
     <View style={styles.container}>
       <Text style={styles.title}>🧾 Interface de Vente</Text>
       <FlatList
@@ -159,6 +163,7 @@ export default function POSScreen() {
         </View>
       )}
     </View>
+    </SafeAreaView>
   );
 }
 

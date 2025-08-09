@@ -8,16 +8,18 @@ import {
   ActivityIndicator,
   TouchableOpacity
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
-
+ 
 export default function LivreursScreen() {
   const [adminCity, setAdminCity] = useState('');
   const [livreurs, setLivreurs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { orderId } = useLocalSearchParams();
+
 
   const fetchAdminCity = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -41,7 +43,28 @@ export default function LivreursScreen() {
       setLoading(false);
     }
   };
-
+  const handleAssignLivreur = async (livreurId: string) => {
+    const token = await AsyncStorage.getItem('token');  
+    if (!orderId) {
+      alert("Aucune commande sélectionnée.");
+      return;
+    }
+    try {
+      await axios.post(`${BASE_URL}/api/delivery/assign`, {
+        livreur_id: livreurId,
+        order_id: orderId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      alert("Livreurr affecté avec succès !");
+      router.back();
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l'affectation.");
+    }
+  };
+  
   useEffect(() => {
     fetchAdminCity().then(city => fetchLivreurs(city));
   }, []);
@@ -58,9 +81,18 @@ export default function LivreursScreen() {
           style={styles.trackButton}
           onPress={() => router.push(`/adminTrack?order_id=${item.order_id}`)}
         >
-          <Text style={styles.trackText}>📍 Suivre le livreur</Text>
+          <Text style={styles.trackText}>Suivre le livreur</Text>
         </TouchableOpacity>
       )}
+      {item.status === 'disponible' && orderId && (
+  <TouchableOpacity
+    style={styles.trackButton}
+    onPress={() => handleAssignLivreur(item._id)} 
+  >
+    <Text style={styles.trackText}>Affecter ce livreur</Text>
+  </TouchableOpacity>
+)}
+
     </View>
   );
 

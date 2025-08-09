@@ -5,6 +5,8 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '@/constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BackButton from '@/components/BackButton';
 
 interface Product {
   _id: string;
@@ -125,8 +127,10 @@ export default function InventoryScreen() {
   );
   
   return (
+    <SafeAreaView style={{ flex: 1 }}>
+    <BackButton></BackButton>
     <View style={styles.container}>
-      <Text style={styles.title}>📦 Inventaire - {adminCity || '...'}</Text>
+      <Text style={styles.title}>Inventaire - {adminCity || '...'}</Text>
       <TouchableOpacity
   style={{ backgroundColor: '#FFA500', padding: 12, borderRadius: 8, marginBottom: 16 }}
   onPress={async () => {
@@ -165,6 +169,7 @@ export default function InventoryScreen() {
         <Text style={styles.buttonText}>Ajouter / Retirer</Text>
       </TouchableOpacity>
     </View>
+  
   )}
 />
 
@@ -211,6 +216,7 @@ export default function InventoryScreen() {
         </View>
       </Modal>
     </View>
+    </SafeAreaView>
   );
 }
 

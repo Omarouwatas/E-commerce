@@ -2,7 +2,7 @@ from app import create_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from jobs.train_lstm_job import train_lstm
 scheduler = BackgroundScheduler()
-scheduler.add_job(train_lstm, trigger='interval', days=3)  # tous les 3 jours
+scheduler.add_job(train_lstm, trigger='interval', days=3) 
 scheduler.start()
 app = create_app()
 

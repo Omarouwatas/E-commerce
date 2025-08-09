@@ -101,10 +101,10 @@ export default function OrdersToDeliver() {
 
       <View style={styles.actionRow}>
         <TouchableOpacity style={styles.acceptButton} onPress={() => handleAccept(item._id)}>
-          <Text style={styles.buttonText}>✅ Accepter</Text>
+          <Text style={styles.buttonText}>Accepter</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.refuseButton} onPress={() => handleRefuse(item._id)}>
-          <Text style={styles.buttonText}>❌ Refuser</Text>
+          <Text style={styles.buttonText}>Refuser</Text>
         </TouchableOpacity>
       </View>
     </View>

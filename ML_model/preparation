@@ -1,84 +1,50 @@
-from pymongo import MongoClient
 import pandas as pd
-from datetime import datetime
-import pytz
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+import json
 
-# Connexion MongoDB
-client = MongoClient("mongodb://localhost:27017") 
-db = client["commerce_platform"]  
-orders_col = db["commandes"]
-inventory_col = db["inventaire"]
+ventes_df = pd.read_csv("ventes_synthetiques.csv")
 
-# Extraction des commandes
-orders_cursor = orders_col.find()
-orders = list(orders_cursor)
+with open("ML_model/commerce_platform.products.json", "r", encoding="utf-8") as f:
+    products_data = json.load(f)
+products_df = pd.DataFrame(products_data)
+ventes_df["nom_produit"] = ventes_df["nom_produit"].str.strip().str.lower()
+products_df["nom_produit"] = products_df["name"].str.strip().str.lower()
+merged_df = ventes_df.merge(products_df, on="nom_produit", how="left")
+produits_non_trouves = merged_df[merged_df["_id"].isnull()]["nom_produit"].unique()
+if len(produits_non_trouves) > 0:
+    print(" Produits non trouvés dans la base :", produits_non_trouves)
+merged_df = merged_df.dropna(subset=["_id"])
+merged_df["_id"] = merged_df["_id"].astype(int)
+features = merged_df[["quantite", "prix_unitaire", "promo"]].values
+scaler = MinMaxScaler()
+scaled_features = scaler.fit_transform(features)
+sequence_length = 3
+X, y = [], []
+grouped = merged_df.groupby("_id")
+for product_id, group in grouped:
+    product_features = group[["quantite", "prix_unitaire", "promo"]].values
+    product_scaled = scaler.transform(product_features)
+    for i in range(len(product_scaled) - sequence_length):
+        X.append(product_scaled[i:i+sequence_length])
+        y.append(product_scaled[i+sequence_length][0])  # prédire la quantité future
 
-enriched_data = []
-for order in orders:
-    date = order["date_commande"]
-    if isinstance(date, dict) and "$date" in date:
-        date = datetime.fromisoformat(date["$date"].replace("Z", "+00:00"))
-    date = date.astimezone(pytz.utc)
-    
-    gouvernorat = order["adresse_livraison"]["gouvernorat"]
-    ville = order["adresse_livraison"]["ville"]
-    jour_semaine = date.weekday()
-    mois = date.month
-    mode_paiement = order["mode_paiement"]
-    nb_produits_dans_commande = sum(p["quantite"] for p in order["produits"])
-    
-    for produit in order["produits"]:
-        enriched_data.append({
-            "product_id": produit["product_id"],
-            "nom_produit": produit["nom"],
-            "date_commande": date.date(),
-            "jour_semaine": jour_semaine,
-            "mois": mois,
-            "ville": ville,
-            "gouvernorat": gouvernorat,
-            "mode_paiement": mode_paiement,
-            "nb_produits_dans_commande": nb_produits_dans_commande,
-            "quantite": produit["quantite"],
-            "prix_unitaire": produit["prix"],
-            "revenu": produit["quantite"] * produit["prix"]
-        })
+X = np.array(X)
+y = np.array(y)
 
-df = pd.DataFrame(enriched_data)
+print(f" Données prêtes : X.shape = {X.shape}, y.shape = {y.shape}")
 
-grouped = df.groupby([
-    "product_id", "nom_produit", "date_commande", "jour_semaine", "mois",
-    "ville", "gouvernorat", "mode_paiement"
-]).agg({
-    "quantite": "sum",
-    "revenu": "sum",
-    "nb_produits_dans_commande": "mean",
-    "prix_unitaire": "mean"
-}).reset_index()
+# === Construire le modèle LSTM
+model = Sequential()
+model.add(LSTM(64, activation='relu', input_shape=(X.shape[1], X.shape[2])))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mse')
 
-inventory_cursor = inventory_col.find()
-inventory_data = []
-for item in inventory_cursor:
-    date_ajout = item["date_ajout"]
-    if isinstance(date_ajout, dict) and "$date" in date_ajout:
-        date_ajout = datetime.fromisoformat(date_ajout["$date"].replace("Z", "+00:00"))
-    inventory_data.append({
-        "product_id": item["product_id"],
-        "emplacement": item["emplacement"],
-        "date_ajout": date_ajout.date(),
-        "quantite_disponible": item["quantite_disponible"]
-    })
+# === Entraîner le modèle
+model.fit(X, y, epochs=50, verbose=1)
 
-stock_df = pd.DataFrame(inventory_data)
-merged_df = pd.merge(
-    grouped,
-    stock_df,
-    how="left",
-    left_on=["product_id", "gouvernorat", "date_commande"],
-    right_on=["product_id", "emplacement", "date_ajout"]
-)
-
-merged_df["quantite_disponible"] = merged_df["quantite_disponible"].fillna(0)
-merged_df.drop(columns=["emplacement", "date_ajout"], inplace=True)
-
-merged_df.to_csv("donnees_lstm.csv", index=False)
-print("✅ Données enrichies exportées vers 'donnees_lstm.csv'")
+# === Sauvegarder le modèle
+model.save("lstm_model.keras")
+print(" Modèle entraîné et sauvegardé.")

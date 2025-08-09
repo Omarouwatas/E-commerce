@@ -1,0 +1,334 @@
+[{
+  "_id": {
+    "$oid": "6876d6e9de230cc5de33be54"
+  },
+  "name": "iphone 13 pro",
+  "price": 570,
+  "description": "5G , wi fi , Camera ",
+  "quantity": 63,
+  "category": "Phones",
+  "brand": "Apple",
+  "colors": [
+    "Blanc"
+  ],
+  "images": [
+    "/assets/uploads/photo0.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-15T22:32:09.522Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3208d9cc94be00fd0a00"
+  },
+  "name": "Nike Air Max",
+  "price": 120,
+  "description": "Chaussures de sport stylées",
+  "quantity": 49,
+  "category": "Shoes",
+  "brand": "Nike",
+  "colors": [
+    "Noir",
+    "Blanc",
+    "Rouge"
+  ],
+  "images": [
+    "/assets/uploads/shoes.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T11:37:44.915Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a32c3d9cc94be00fd0a01"
+  },
+  "name": "AirMax Runner",
+  "price": 149.99,
+  "description": "Conçues pour les amateurs de course, les AirMax Runner offrent un confort exceptionnel grâce à leur semelle amortissante et leur tissu respirant.",
+  "quantity": 40,
+  "category": "Shoes",
+  "brand": "Nike",
+  "colors": [
+    "Noir",
+    "Rouge"
+  ],
+  "images": [
+    "/assets/uploads/shoes.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T11:40:51.979Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a32dfd9cc94be00fd0a02"
+  },
+  "name": "CloudStep Urban",
+  "price": 89.99,
+  "description": "Idéales pour la marche urbaine, les CloudStep Urban combinent légèreté, flexibilité et style moderne pour accompagner vos journées actives.",
+  "quantity": 62,
+  "category": "Shoes",
+  "brand": "Adidas",
+  "colors": [
+    "Gris",
+    "Bleu ciel"
+  ],
+  "images": [
+    "/assets/uploads/shoes.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T11:41:19.420Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a36e5d9cc94be00fd0a03"
+  },
+  "name": "AirPods Pro",
+  "price": 249.99,
+  "description": "Les AirPods Pro offrent un son de qualité supérieure avec réduction de bruit active et mode transparence.",
+  "quantity": 19,
+  "category": "Accessories",
+  "brand": "Apple",
+  "colors": [
+    "Blanc"
+  ],
+  "images": [
+    "/assets/uploads/airpods.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T11:58:29.871Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a04"
+  },
+  "name": "Winter Hoodie",
+  "price": 59.99,
+  "description": "Sweat à capuche chaud et confortable, parfait pour les journées d'hiver.",
+  "quantity": 20,
+  "category": "Clothes",
+  "brand": "Zara",
+  "colors": [
+    "Gris",
+    "Noir"
+  ],
+  "images": [
+    "/assets/uploads/hoddies.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.225Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a05"
+  },
+  "name": "Leather Jacket",
+  "price": 120,
+  "description": "Veste en cuir véritable pour un style urbain et élégant.",
+  "quantity": 22,
+  "category": "Clothes",
+  "brand": "Stradivarius",
+  "colors": [
+    "Marron"
+  ],
+  "images": [
+    "/assets/uploads/jackets.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.238Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a06"
+  },
+  "name": "Running Joggers",
+  "price": 39.99,
+  "description": "Pantalons joggers légers et flexibles, idéals pour le sport ou la détente.",
+  "quantity": 40,
+  "category": "Clothes",
+  "brand": "Nike",
+  "colors": [
+    "Bleu",
+    "Gris"
+  ],
+  "images": [
+    "/assets/uploads/joggers.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.248Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a07"
+  },
+  "name": "Work Laptop",
+  "price": 899,
+  "description": "Ordinateur portable puissant avec processeur rapide et écran haute résolution.",
+  "quantity": 19,
+  "category": "Laptops",
+  "brand": "HP",
+  "colors": [
+    "Gris"
+  ],
+  "images": [
+    "/assets/uploads/laptop.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.257Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a08"
+  },
+  "name": "Casual Pants",
+  "price": 45,
+  "description": "Pantalon léger pour un usage quotidien avec une coupe moderne.",
+  "quantity": 22,
+  "category": "Clothes",
+  "brand": "Uniqlo",
+  "colors": [
+    "Noir",
+    "Beige"
+  ],
+  "images": [
+    "/assets/uploads/pants.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.267Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a09"
+  },
+  "name": "Slim Fit Pants",
+  "price": 49,
+  "description": "Pantalon coupe slim avec finition élégante, idéal pour le bureau.",
+  "quantity": 18,
+  "category": "Clothes",
+  "brand": "H&M",
+  "colors": [
+    "Bleu marine"
+  ],
+  "images": [
+    "/assets/uploads/pants2.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.276Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a0a"
+  },
+  "name": "Casual T-shirt",
+  "price": 25,
+  "description": "T-shirt confortable pour un look décontracté et stylé.",
+  "quantity": 35,
+  "category": "T-Shirts",
+  "brand": "Pull&Bear",
+  "colors": [
+    "Blanc",
+    "Vert"
+  ],
+  "images": [
+    "/assets/uploads/Tshirt.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.286Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "687a3741d9cc94be00fd0a0b"
+  },
+  "name": "Smart Watch",
+  "price": 199.99,
+  "description": "Montre connectée avec suivi de santé, notifications, et GPS intégré.",
+  "quantity": 20,
+  "category": "Accessories",
+  "brand": "Samsung",
+  "colors": [
+    "Noir"
+  ],
+  "images": [
+    "/assets/uploads/watches.jpg"
+  ],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-18T12:00:01.296Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "688b48f9922a10b77e820607"
+  },
+  "name": "mac book",
+  "price": 200,
+  "description": "N’importe quoi",
+  "quantity": 50,
+  "category": "Laptops",
+  "brand": "Apple",
+  "colors": [
+    "Blanc"
+  ],
+  "images": [],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-31T10:44:09.609Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "688b4bac922a10b77e82060a"
+  },
+  "name": "iphone 15 ",
+  "price": 700,
+  "description": "5G ,wi fi …",
+  "quantity": 20,
+  "category": "Phones",
+  "brand": "Apple",
+  "colors": [
+    "Noir"
+  ],
+  "images": [],
+  "rating": null,
+  "reviews_count": 0,
+  "date_added": {
+    "$date": "2025-07-31T10:55:40.915Z"
+  }
+}]

@@ -15,11 +15,10 @@ interface Prediction {
 export default function PredictionScreen() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
-
   const fetchPredictions = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await axios.get(`${BASE_URL}/api/orders/predict`, {
+      const res = await axios.get(`${BASE_URL}/api/ML/predict`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPredictions(res.data);
@@ -29,7 +28,6 @@ export default function PredictionScreen() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchPredictions();
   }, []);
@@ -38,7 +36,7 @@ export default function PredictionScreen() {
     <SafeAreaView style={{ flex: 1 }}>
     <BackButton />
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>🔮 Prédiction des ventes</Text>
+      <Text style={styles.title}>Prédiction des ventes</Text>
       {loading ? (
         <ActivityIndicator size="large" />
       ) : predictions.length === 0 ? (
