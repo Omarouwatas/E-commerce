@@ -20,8 +20,7 @@ def create_app():
     app.config.from_object("app.config.Config")
     mongo.init_app(app)
     jwt.init_app(app)
-    app.register_blueprint(predict_bp)
-
+    app.register_blueprint(predict_bp,url_prefix="/api/ML")
     app.register_blueprint(cart_bp, url_prefix="/api/cart")
     app.register_blueprint(inventory_bp, url_prefix="/api/inventory")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")

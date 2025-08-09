@@ -6,8 +6,8 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-const router = useRouter();
-import { BASE_URL } from '../../constants';
+import { BASE_URL } from '../constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 interface User {
     _id: string;
     name: string;
@@ -15,7 +15,6 @@ interface User {
     role: string;
     sales_count: number;
   }
-  
 export default function UserManagementScreen() {
     const [users, setUsers] = useState<User[]>([]);
     const router = useRouter();
@@ -49,7 +48,6 @@ export default function UserManagementScreen() {
       Alert.alert("Erreur", "Suppression échouée.");
     }
   };
-
   const handleRoleChange = async (id: string, newRole: string) => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -65,26 +63,27 @@ export default function UserManagementScreen() {
   };
 
   return (
-    
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
   <Text style={styles.backText}>← Retour</Text>
 </TouchableOpacity>
       <Text style={styles.title}>Gestion des Utilisateurs</Text>
       <FlatList
-        data={users}
-        keyExtractor={item => item._id}
+       data={users.filter(user => user.role === 'client')}
+      keyExtractor={item => item._id}
         renderItem={({ item }) => (
+      
           <View style={styles.card}>
             <Text style={styles.name}>{item.name}</Text>
             <Text>Email: {item.email}</Text>
-            <Text>Rôle: {item.role}</Text>
             <Text>Ventes: {item.sales_count}</Text>
 
             <View style={styles.row}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => router.push('/historiqueClient')}>
+                onPress={() => router.push({ pathname: '/historiqueClient', params: { clientId: item._id } })}>
+
                 <Text style={styles.buttonText}>Historique des ventes</Text>
               </TouchableOpacity>
 
@@ -93,13 +92,14 @@ export default function UserManagementScreen() {
                 onPress={() => handleDelete(item._id)}>
                 <Text style={styles.buttonText}>Supprimer</Text>
               </TouchableOpacity>
-              
+    
             </View>
             
           </View>
         )}
       />
     </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

@@ -6,7 +6,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '@/constants';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import BackButton from '@/components/BackButton';
 export default function HistoriqueClient() {
   const [ventes, setVentes] = useState<any[]>([]);
@@ -16,6 +16,8 @@ export default function HistoriqueClient() {
 
   useEffect(() => {
     const fetchHistorique = async () => {
+      const { clientId } = useLocalSearchParams();
+
       const token = await AsyncStorage.getItem("token");
       try {
         const [resVentes, resCommandes] = await Promise.all([

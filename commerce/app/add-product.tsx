@@ -7,7 +7,9 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { BASE_URL } from '../../constants';
+import { BASE_URL } from '../constants';
+import BackButton from '@/components/BackButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const categoriesList = [
   "Phones", "Accessories", "Laptops", "Clothes", "Chargers", "Watches", "Covers", "Headphones"
 ];
@@ -76,7 +78,9 @@ export default function AddProductScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.container}>
+      <BackButton></BackButton>
       <Text style={styles.title}>Ajouter un Produit</Text>
 
       <TextInput style={styles.input} placeholder="Nom" value={name} onChangeText={setName} />
@@ -120,6 +124,7 @@ export default function AddProductScreen() {
         <Text style={styles.submitText}>Ajouter</Text>
       </TouchableOpacity>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

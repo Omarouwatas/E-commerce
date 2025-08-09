@@ -171,15 +171,13 @@ export default function ReceiptScreen() {
 }
 {role === 'LIVREUR' && accepted && (
   <TouchableOpacity style={[styles.backButton, { backgroundColor: '#FF5252' }]} onPress={handleCancelDelivery}>
-    <Text style={styles.backText}>❌ Annuler la livraison</Text>
+    <Text style={styles.backText}>Annuler la livraison</Text>
   </TouchableOpacity>
 )}
-
     </View>
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },

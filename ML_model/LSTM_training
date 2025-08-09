@@ -1,32 +1,51 @@
+import pandas as pd
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.layers import LSTM, Dense
+import pickle
 
-X = np.load("X_lstm.npy") 
-y = np.load("y_lstm.npy") 
+df = pd.read_csv("ventes_synthetiques_600.csv")
+df = df.dropna(subset=["product_id"])
+df["product_id"] = df["product_id"].astype(str)
+df["date_commande"] = pd.to_datetime(df["date_commande"])
+df = df.sort_values(by=["product_id", "date_commande"])
+sequence_length = 7
+X_all, y_all = [], []
+product_scalers = {}
+product_ids = df["product_id"].unique()
+global_scaler = MinMaxScaler()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+for pid in product_ids:
+    product_df = df[df["product_id"] == pid]
+    features = product_df[["quantite", "prix_unitaire", "quantite_disponible", "jour_semaine", "mois", "promo"]].values
+    scaler = MinMaxScaler()
+    features_scaled = scaler.fit_transform(features)
+    product_scalers[pid] = scaler
+    for i in range(len(features_scaled) - sequence_length):
+        X_all.append(features_scaled[i:i+sequence_length])
+        y_all.append(features_scaled[i+sequence_length][0])  
 
+X = np.array(X_all)
+y = np.array(y_all).reshape(-1, 1)
+
+# === Normalisation de y ===
+global_scaler.fit(y)
+y = global_scaler.transform(y)
+
+# === Construction et entraînement du modèle ===
 model = Sequential()
-model.add(LSTM(64, activation='tanh', input_shape=(X.shape[1], X.shape[2]), return_sequences=False))
-model.add(Dropout(0.2))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(1)) 
+model.add(LSTM(64, activation='relu', input_shape=(X.shape[1], X.shape[2])))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mse')
+model.fit(X, y, epochs=50, batch_size=32)
 
+# === Sauvegarde du modèle et des scalers ===
+model.save("lstm_model.keras")
+with open("scalers.pkl", "wb") as f:
+    pickle.dump({
+        "product_scalers": product_scalers,
+        "global_scaler": global_scaler
+    }, f)
 
-model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-early_stop = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-history = model.fit(
-    X_train, y_train,
-    validation_data=(X_test, y_test),
-    epochs=100,
-    batch_size=16,
-    callbacks=[early_stop],
-    verbose=1
-)
-loss, mae = model.evaluate(X_test, y_test, verbose=0)
-print(f"✅ Test MAE (quantité prédite vs réelle) : {mae:.3f}")
-model.save("lstm_model.h5")
-print("✅ Modèle LSTM sauvegardé sous lstm_model.h5")
+print("Modèle et scalers sauvegardés avec succès.")

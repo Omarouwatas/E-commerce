@@ -7,7 +7,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
-import { BASE_URL } from '../../constants';
+import { BASE_URL } from '../constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Order {
   _id: string;
@@ -80,29 +81,39 @@ export default function ManageSalesScreen() {
           style={styles.confirmButton}
           onPress={() => confirmOrder(item._id)}
         >
-          <Text style={styles.confirmButtonText}>✅ Confirmer</Text>
+          <Text style={styles.confirmButtonText}>Confirmer</Text>
         </TouchableOpacity>
       )}
 
-      {item.statut === "confirmee" && (
+{item.statut.toLowerCase() === "confirmée" && (
         <TouchableOpacity
           style={styles.assignButton}
           onPress={() => goToAssignLivreur(item._id)}
         >
-          <Text style={styles.confirmButtonText}>🚚 Affecter à un livreur</Text>
+          <Text style={styles.confirmButtonText}>Affecter à un livreur</Text>
         </TouchableOpacity>
       )}
+      {item.statut === "en_cours_de_livraison" && (
+  <TouchableOpacity
+    style={[styles.assignButton, { backgroundColor: '#FF9800' }]}
+    onPress={() => router.push({ pathname: '/adminTrack', params: { orderId: item._id } })}
+  >
+    <Text style={styles.confirmButtonText}>📍 Suivre le livreur</Text>
+  </TouchableOpacity>
+)}
+
     </View>
   );
 
   return (
+    <SafeAreaView style = {{flex : 1 }}>
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>← Retour</Text>
       </TouchableOpacity>
       <View style={styles.headerActions}>
         <TouchableOpacity onPress={() => router.push('/ScanTicketScreen')} style={styles.scanButton}>
-          <Text style={styles.scanText}>📷 Scanner Ticket</Text>
+          <Text style={styles.scanText}>Scanner un Ticket</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.pageTitle}>Gérer les commandes</Text>
@@ -116,6 +127,7 @@ export default function ManageSalesScreen() {
         />
       )}
     </View>
+    </SafeAreaView>
   );
 }
 

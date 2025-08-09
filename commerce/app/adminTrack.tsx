@@ -33,7 +33,7 @@ export default function AdminTrackScreen() {
 
   useEffect(() => {
     fetchTrackingInfo();
-    const interval = setInterval(fetchTrackingInfo, 10000); // refresh every 10 seconds
+    const interval = setInterval(fetchTrackingInfo, 10000); 
     return () => clearInterval(interval);
   }, []);
 

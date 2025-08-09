@@ -11,34 +11,39 @@ export default function AdminDashboard() {
     <View style={styles.container}>
       <Text style={styles.title}>Tableau de Bord Admin</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/add-product')}>
-        <Text style={styles.buttonText}>➕ Ajouter un produit</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/add-product')}>
+        <Text style={styles.buttonText}>Ajouter un produit</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/inventory')}>
-        <Text style={styles.buttonText}>📦 Suivre l’inventaire</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/inventory')}>
+        <Text style={styles.buttonText}>Gérer l’inventaire</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/users')}>
-        <Text style={styles.buttonText}>👤 Gérer les utilisateurs</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/users')}>
+        <Text style={styles.buttonText}>Gérer les utilisateurs</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/(admin)/ManageSalesScreen')}>
-        <Text style={styles.buttonText}>Gérer Les Commandes</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/ManageSalesScreen')}>
+        <Text style={styles.buttonText}>Gérer les Commandes</Text>
       </TouchableOpacity>
       
       <TouchableOpacity
         style={styles.btn}
-        onPress={() => router.push('/(admin)/pos')}
+        onPress={() => router.push('/pos')}
       >
         <Text style={styles.btnText}>Interface de vente</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={styles.btn}
-        onPress={() => router.push('livreursScreen')}
+        onPress={() => router.push('/livreursScreen')}
       >
         <Text style={styles.btnText}>Gestion des livreurs</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => router.push('/PredictionScreen')}
+      >
+        <Text style={styles.btnText}>Prediction des ventes par l'IA </Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.button,  styles.logout]} onPress={handleLogout}>
       <Text style={[styles.buttonText, { color: '#fff' }]}> Se déconnecter</Text>
