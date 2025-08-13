@@ -60,7 +60,7 @@ export default function ScanScreen() {
         barCodeScannerSettings={{ barCodeTypes: ["qr", "ean13", "code128"] }}
       />
       <View style={styles.overlay}>
-        <Text style={styles.text}>📷 Scannez un produit</Text>
+        <Text style={styles.text}>Scannez un produit</Text>
         <Text style={styles.textSmall}>Produits scannés : {scannedCodes.length}</Text>
         <Button title="Retour" onPress={() => router.back()} color="#fff" />
       </View>
