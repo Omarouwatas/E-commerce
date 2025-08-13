@@ -29,7 +29,22 @@ yarn-error.*
 # macOS
 .DS_Store
 *.pem
+# Environnement virtuel Python
+venv/
+env/
+.venv/
 
+# Fichiers compilés
+__pycache__/
+*.pyc
+*.pyo
+
+# Config locale
+*.env
+config.json
+
+# Cache
+.cache/
 # local env files
 .env*.local
 

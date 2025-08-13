@@ -4,7 +4,6 @@ import pickle
 import tensorflow as tf
 from datetime import datetime, timedelta
 
-# Charger modèle et scalers
 model = tf.keras.models.load_model("lstm_model.keras")
 with open("scalers.pkl", "rb") as f:
     scalers = pickle.load(f)
@@ -43,7 +42,7 @@ for pid, product_df in df.groupby("product_id"):
     for i, date in enumerate(dates_to_predict):
         jour_semaine = date.weekday()
         mois = date.month
-        promo = np.random.choice([0, 10, 20])  # 👈 tu peux adapter selon ta stratégie
+        promo = np.random.choice([0, 10, 20])  
 
         # Dummy valeurs (tu peux améliorer ici)
         prix_unitaire = product_df["prix_unitaire"].iloc[-1]

@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native';
+let MapView: any;
+let Marker: any;
+if (Platform.OS !== 'web') {
+  MapView = require('react-native-maps').default;
+  Marker = require('react-native-maps').Marker;
+}
 import { useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,7 +17,7 @@ export default function AdminTrackScreen() {
   const { order_id } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [livreurInfo, setLivreurInfo] = useState<any>(null);
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const fetchTrackingInfo = async () => {
     try {
@@ -20,12 +25,11 @@ export default function AdminTrackScreen() {
       const res = await axios.get(`${BASE_URL}/api/delivery/track/${order_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setLivreurInfo(res.data.livreur);
       setLocation(res.data.location);
     } catch (err) {
       console.error(err);
-      Alert.alert("Erreur", "Impossible de récupérer les infos du livreur");
+      Alert.alert('Erreur', "Impossible de récupérer les infos du livreur");
     } finally {
       setLoading(false);
     }
@@ -33,7 +37,7 @@ export default function AdminTrackScreen() {
 
   useEffect(() => {
     fetchTrackingInfo();
-    const interval = setInterval(fetchTrackingInfo, 10000); 
+    const interval = setInterval(fetchTrackingInfo, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -45,21 +49,25 @@ export default function AdminTrackScreen() {
         {loading ? (
           <ActivityIndicator size="large" color="#00c853" />
         ) : location ? (
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.lat,
-              longitude: location.lng,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-          >
-            <Marker
-              coordinate={{ latitude: location.lat, longitude: location.lng }}
-              title={livreurInfo?.nom}
-              description={livreurInfo?.telephone}
-            />
-          </MapView>
+          Platform.OS !== 'web' ? (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: location.lat,
+                longitude: location.lng,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+            >
+              <Marker
+                coordinate={{ latitude: location.lat, longitude: location.lng }}
+                title={livreurInfo?.nom}
+                description={livreurInfo?.telephone}
+              />
+            </MapView>
+          ) : (
+            <Text style={{ textAlign: 'center' }}>Carte non disponible sur le Web</Text>
+          )
         ) : (
           <Text style={{ textAlign: 'center' }}>Position du livreur non disponible.</Text>
         )}
