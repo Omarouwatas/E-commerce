@@ -1,0 +1,18 @@
+# Environnement virtuel Python
+venv/
+env/
+.venv/
+
+# Fichiers compilés
+__pycache__/
+*.pyc
+*.pyo
+
+# Config locale
+*.env
+config.json
+
+# Cache
+.cache/
+Backend/.env
+commerce/.env

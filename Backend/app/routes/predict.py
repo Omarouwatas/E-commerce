@@ -16,7 +16,6 @@ predict_bp = Blueprint("predict_bp", __name__)
 @predict_bp.route("/predict", methods=["GET"])
 def predict_sales():
     try:
-        # Charger modèle et scalers
         model = tf.keras.models.load_model("models/lstm_model1.keras")
         with open("models/scalers.pkl", "rb") as f:
             scalers = pickle.load(f)
@@ -29,7 +28,7 @@ def predict_sales():
         start_date = datetime.today().date() + timedelta(days=1)
         dates_to_predict = [start_date + timedelta(days=i) for i in range(days)]
 
-        df = pd.read_csv("../ventes_synthetiques_600.csv")
+        df = pd.read_csv("data/ventes_synthetiques_600.csv")
         df["date_commande"] = pd.to_datetime(df["date_commande"])
         df = df.sort_values(by="date_commande")
 
