@@ -58,7 +58,7 @@ export default function ClientOrdersScreen() {
             {item.statut === 'en_cours_de_livraison' && (
               <TouchableOpacity
                 style={styles.trackButton}
-                onPress={() => router.push(`/ClientTrackingScreen?order_id=${item._id}`)}
+                onPress={() => router.push(`/adminTrack?order_id=${item._id}`)}
               >
                 <Text style={styles.trackText}>Suivre</Text>
               </TouchableOpacity>

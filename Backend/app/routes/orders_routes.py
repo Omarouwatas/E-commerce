@@ -254,3 +254,37 @@ def get_commande_by_id(commande_id):
     commande["_id"] = str(commande["_id"])
     commande["client_id"] = str(commande["client_id"])
     return jsonify(commande), 200
+
+
+@orders_bp.route("/assigned-to-me", methods=["GET"])
+@jwt_required()
+def orders_assigned_to_me():
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    q = {
+        "assigned_to": ObjectId(user["_id"]) if isinstance(user["_id"], str) else user["_id"],
+        "statut": {"$in": ["assignee", "en_cours_de_livraison"]},
+    }
+    items = []
+    for o in mongo.db.commandes.find(q).sort("date_commande", -1):
+        o["_id"] = str(o["_id"])
+        if isinstance(o.get("date_commande"), datetime):
+            o["date_commande"] = o["date_commande"].isoformat()
+        items.append(o)
+    return jsonify(items), 200
+@orders_bp.route("/<commande_id>", methods=["DELETE"])
+@jwt_required()
+def delete_commande(commande_id): 
+    user_id = get_jwt_identity()
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not user or user.get("role") != "ADMIN":
+        return jsonify({"msg": "Non autorisé"}), 403
+
+    commande = mongo.db.commandes.find_one({"_id": ObjectId(commande_id)})
+    if not commande:
+        return jsonify({"msg": "Commande introuvable"}), 404
+
+    mongo.db.commandes.delete_one({"_id": ObjectId(commande_id)})
+    return jsonify({"msg": "Commande supprimée avec succès"}), 200

@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from flask import current_app, send_from_directory
 UPLOAD_FOLDER = os.path.join("assets", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
-BASE_URL = "http://172.20.10.4:5000"
+BASE_URL = "http://192.168.1.7:5000"
 def serialize_product(product):
     product["_id"] = str(product["_id"])
     product["images"] = [

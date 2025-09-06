@@ -5,7 +5,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 import pickle
 
-df = pd.read_csv("ventes_synthetiques_600.csv")
+df = pd.read_csv("../ventes_synthetiques_600.csv")
 df = df.dropna(subset=["product_id"])
 df["product_id"] = df["product_id"].astype(str)
 df["date_commande"] = pd.to_datetime(df["date_commande"])
@@ -32,16 +32,12 @@ y = np.array(y_all).reshape(-1, 1)
 # === Normalisation de y ===
 global_scaler.fit(y)
 y = global_scaler.transform(y)
-
-# === Construction et entraînement du modèle ===
 model = Sequential()
 model.add(LSTM(64, activation='relu', input_shape=(X.shape[1], X.shape[2])))
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mse')
 model.fit(X, y, epochs=50, batch_size=32)
-
-# === Sauvegarde du modèle et des scalers ===
-model.save("lstm_model.keras")
+model.save("lstm_model1.keras", save_format="keras")
 with open("scalers.pkl", "wb") as f:
     pickle.dump({
         "product_scalers": product_scalers,

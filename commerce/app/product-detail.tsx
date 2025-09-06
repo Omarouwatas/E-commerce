@@ -119,20 +119,7 @@ export default function ProductDetail() {
           </View>
 
           {/* Couleurs */}
-          <Text style={styles.sectionTitle}>Color</Text>
-          <View style={styles.colorRow}>
-            {product.colors.map((color: string, idx: number) => (
-              <TouchableOpacity
-                key={idx}
-                onPress={() => setSelectedColor(color)}
-                style={[
-                  styles.colorDot,
-                  { backgroundColor: color },
-                  selectedColor === color && styles.selectedDot
-                ]}
-              />
-            ))}
-          </View>
+
 
           {/* Onglets */}
           <View style={styles.tabRow}>
@@ -238,7 +225,7 @@ const styles = StyleSheet.create({
     width: screenWidth * 0.1, // ~40px
     height: screenWidth * 0.1, // ~40px (carré)
     borderRadius: screenWidth * 0.05, // ~20px (cercle)
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#05f625ff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -266,12 +253,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#f2f9f414',
     position: 'relative',
-    height: screenHeight * 0.45, // ~45% de l'écran pour les images
+    height: screenHeight * 0.45, 
   },
   imageGallery: {
-    height: screenHeight * 0.4, // ~40% pour la galerie
+    height: screenHeight * 0.4, 
   },
   imageWrapper: {
     width: screenWidth,

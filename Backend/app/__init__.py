@@ -7,12 +7,16 @@ from app.routes.cart_routes import cart_bp
 from app.routes.orders_routes import orders_bp
 from app.routes.stock_routes import stock_bp
 from app.routes.sales_routes import sales_bp
+from dotenv import load_dotenv
+import os
+from app.routes.deliveries_routes import delivery_bp
 from app.routes.predict import predict_bp
 from flask_cors import CORS
 from flask import send_from_directory
 from app.routes.usersList import users_bp
-import os
-from app.routes.deliveries_routes import delivery_bp
+from flask_socketio import SocketIO
+socketio = SocketIO(cors_allowed_origins="*")   
+
 
 def create_app():
     app = Flask(__name__, static_url_path='/assets', static_folder='assets')
@@ -37,5 +41,7 @@ def create_app():
     def serve_uploaded_file(filename):
         uploads_dir = os.path.join(app.static_folder, 'uploads')
         return send_from_directory(uploads_dir, filename)
+    socketio.init_app(app)
+
     return app
 

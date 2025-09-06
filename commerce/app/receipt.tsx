@@ -16,7 +16,7 @@ interface Order {
   total: number;
   statut: string;
   mode_paiement: string;
-  date_commande: string;
+  date_commande?: string;
   adresse_livraison: {
     nom: string;
     rue: string;
@@ -25,7 +25,12 @@ interface Order {
     gouvernorat: string;
   };
 }
-
+const parseDate = (dateField: any) => {
+  if (!dateField) return "Date inconnue";
+  const dateStr = dateField.$date || dateField; 
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? "Date inconnue" : d.toLocaleString();
+};
 export default function ReceiptScreen() {
   const [role , setRole] = useState('');
   const [accepted, setAccepted] = useState(false);
@@ -151,7 +156,6 @@ export default function ReceiptScreen() {
           ))}
 
           <Text style={styles.total}>Total TTC : {order.total} €</Text>
-          <Text style={styles.date}>Date : {new Date(order.date_commande).toLocaleString()}</Text>
         </>
       ) : (
         <Text>Aucune commande à afficher.</Text>

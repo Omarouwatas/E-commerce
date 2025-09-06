@@ -83,7 +83,7 @@ export default function ReceiptScreen() {
         <Text style={{ color: '#007AFF', fontSize: 16 }}>← Retour</Text>
       </TouchableOpacity>
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🧾 Reçu de commande</Text>
+      <Text style={styles.title}>Reçu de commande</Text>
 
       {order ? (
         <>
@@ -111,7 +111,7 @@ export default function ReceiptScreen() {
           
 
           <TouchableOpacity style={styles.button} onPress={generatePdf}>
-            <Text style={styles.buttonText}>📄 Télécharger le reçu (PDF)</Text>
+            <Text style={styles.buttonText}>Télécharger le reçu (PDF)</Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text style={styles.button} onPress={() => router.push('/(tabs)/home')}>Retour</Text>

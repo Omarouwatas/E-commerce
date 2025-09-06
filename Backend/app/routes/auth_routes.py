@@ -81,3 +81,29 @@ def get_current_user():
     user["_id"] = str(user["_id"])
     user["password"] = "🔒"
     return jsonify(user), 200
+# auth.py (même fichier que ton GET)
+
+
+@auth_bp.route("/me", methods=["PUT"])
+@jwt_required()
+def update_current_user():
+    user_id = get_jwt_identity()
+    payload = request.get_json(force=True) or {}
+
+    # On limite les champs modifiables
+    allowed_fields = {"nom", "telephone", "adresses"}
+    update = {k: v for k, v in payload.items() if k in allowed_fields}
+
+    # Validation basique
+    if "adresses" in update and not isinstance(update["adresses"], list):
+        return jsonify({"msg": "Le champ 'adresses' doit être une liste."}), 400
+
+    # Update
+    res = mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update})
+    if res.matched_count == 0:
+        return jsonify({"msg": "Utilisateur non trouvé"}), 404
+
+    user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+    user["_id"] = str(user["_id"])
+    user["password"] = "🔒"
+    return jsonify(user), 200

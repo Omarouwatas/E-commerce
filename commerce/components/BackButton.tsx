@@ -1,29 +1,35 @@
 // components/BackButton.tsx
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function BackButton({ label = "Retour" }) {
   const router = useRouter();
 
   return (
-    <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-      <Ionicons name="arrow-back" size={20} color="#00C851" style={{ marginRight: 6 }} />
-      <Text style={styles.label}>{label}</Text>
+    <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+      <Ionicons name="arrow-back" size={18} color="#2d6a4f" style={{ marginRight: 6 }} />
+      <Text style={styles.backBtnText}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#2d6a4f",
+    alignSelf: "flex-start", 
+    marginBottom: 12,
   },
-  label: {
-    color: '#00C851',
-    fontWeight: '600',
-    fontSize: 16,
+  backBtnText: {
+    color: "#2d6a4f",
+    fontWeight: "700",
+    fontSize: 14,
   },
 });

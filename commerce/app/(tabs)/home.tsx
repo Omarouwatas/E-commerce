@@ -153,16 +153,16 @@ const debouncedSearch = useCallback(debounce(searchProducts, 300), []);
       paddingVertical: 16,
       marginBottom: 10,
     }}>
-      <Icon name="search" size={16} color="#888" style={{ marginRight: 8 }} />
+      <Icon name="search" size={16} color="#27eb15ff" style={{ marginRight: 8 }} />
       <TextInput
   placeholder="Rechercher un produit"
   value={searchQuery}
   style={{
     paddingVertical: 6,
 paddingHorizontal: 12,
-marginVertical: 4,
+margin: 4,
 fontSize: 14,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#ecf2ebff',
     borderRadius: 10,
   }}
   onChangeText={debouncedSearch}
@@ -273,16 +273,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: screenWidth * 0.07, // ~28px sur un écran de 400px
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#fdf9f9ff',
+    alignContent: 'center',
+    textAlign: 'center',
     marginBottom: screenHeight * 0.005, // ~4px
   },
   headerSubtitle: {
-    fontSize: screenWidth * 0.04, // ~16px
-    color: '#666666',
+    fontSize: screenWidth * 0.05, // ~16px
+    color: '#c2c2c2ff',
   },
   filterRow: {
-    marginBottom: screenHeight * 0.025, // ~20px
-    height: screenHeight * 0.08, // ~64px pour la hauteur du scroll horizontal
+    marginBottom: screenHeight * 0.025, 
+    height: screenHeight * 0.08, 
   },
   filterContainer: {
     paddingRight: screenWidth * 0.025, // ~10px
@@ -295,16 +297,16 @@ paddingVertical: '2%',
 paddingHorizontal: '4%',
     borderRadius: screenWidth * 0.05, // ~20px
     marginRight: screenWidth * 0.025, // ~10px
-    backgroundColor: '#F2F2F2',
-    borderWidth: 1,
-    borderColor: '#DDD',
+    backgroundColor: '#b0d348ff',
+    borderWidth: 3,
+    borderColor: '#c20e0eff',
     alignItems: 'center',
     justifyContent: 'center',
     height: screenHeight * 0.05, // Hauteur fixe pour uniformité
   },
   activeFilter: {
-    backgroundColor: '#00C851',
-    borderColor: '#00C851',
+    backgroundColor: '#3a8558ff',
+    borderColor: '#c82f00ff',
     elevation: 3,
     shadowColor: '#00C851',
     shadowOffset: { width: 0, height: 2 },
@@ -312,12 +314,12 @@ paddingHorizontal: '4%',
     shadowRadius: 4,
   },
   filterText: {
-    fontSize: screenWidth * 0.035, // ~14px
+    fontSize: screenWidth * 0.035,
     fontWeight: '600',
-    color: '#333333',
+    color: '#4c4b4bff',
   },
   activeText: {
-    color: '#FFFFFF',
+    color: '#eeececff',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -329,7 +331,7 @@ paddingHorizontal: '4%',
   sectionTitle: {
     fontSize: screenWidth * 0.05, // ~20px
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#f8f6f5ff',
   },
   seeAllText: {
     fontSize: screenWidth * 0.035, // ~14px
@@ -342,20 +344,20 @@ paddingHorizontal: '4%',
     paddingHorizontal: '1%',
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#71e67cff',
     borderRadius: screenWidth * 0.04, // ~16px
-    width: '47%', // Légèrement réduit pour un meilleur espacement
+    width: '47%', 
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     overflow: 'hidden',
-    minHeight: screenHeight * 0.32, // ~220px adaptatif
+    minHeight: screenHeight * 0.28, 
     marginHorizontal: '1%',
   },
   imageContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#faf6f6ff',
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
@@ -368,39 +370,21 @@ paddingHorizontal: '4%',
   height: '100%',
   resizeMode: 'contain',
   },
-  favoriteBtn: {
-    position: 'absolute',
-    top: screenHeight * 0.015, // ~12px
-    right: screenWidth * 0.03, // ~12px
-    backgroundColor: '#FFFFFF',
-    width: screenWidth * 0.08, // ~32px
-    height: screenWidth * 0.08, // ~32px (carré)
-    borderRadius: screenWidth * 0.04, // ~16px (cercle parfait)
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  favoriteIcon: {
-    fontSize: screenWidth * 0.04, // ~16px
-    color: '#00C851',
-  },
+
+ 
   productInfo: {
-    padding: screenWidth * 0.03, // ~12px
+    padding: screenWidth * 0.03,
     flex: 1,
     justifyContent: 'space-between',
-    height: '45%', // 45% de la hauteur de la carte pour les infos
+    height: '45%', 
   },
   name: {
     fontSize: screenWidth * 0.04, // ~16px
     fontWeight: '600',
     color: '#000000',
-    marginBottom: screenHeight * 0.01, // ~8px
-    lineHeight: screenWidth * 0.045, // ~18px
-    minHeight: screenHeight * 0.05, // ~36px pour 2 lignes
+    marginBottom: screenHeight * 0.01,
+    lineHeight: screenWidth * 0.045, 
+    minHeight: screenHeight * 0.05, 
     flexShrink: 1,
   },
   bottomSection: {
@@ -410,7 +394,7 @@ paddingHorizontal: '4%',
   price: {
     fontSize: screenWidth * 0.04, // ~16px
     fontWeight: 'bold',
-    color: '#00C851',
+    color: '#023717ff',
     marginBottom: screenHeight * 0.01, // ~8px
   },
   colorRow: {

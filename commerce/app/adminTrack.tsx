@@ -1,95 +1,146 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native';
-let MapView: any;
-let Marker: any;
-if (Platform.OS !== 'web') {
-  MapView = require('react-native-maps').default;
-  Marker = require('react-native-maps').Marker;
-}
-import { useLocalSearchParams } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BackButton from '@/components/BackButton';
+import MapView, { Marker } from 'react-native-maps';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { BASE_URL } from '@/constants';
+import BackButton from '@/components/BackButton';
+import { useLocalSearchParams } from 'expo-router';
+
+interface Coords { latitude: number; longitude: number; }
 
 export default function AdminTrackScreen() {
-  const { order_id } = useLocalSearchParams();
+  const { orderId } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
-  const [livreurInfo, setLivreurInfo] = useState<any>(null);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [livreurLoc, setLivreurLoc] = useState<Coords | null>(null);
+  const [livreurInfo, setLivreurInfo] = useState<{ nom?: string; telephone?: string } | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const mapRef = useRef<MapView>(null);
 
-  const fetchTrackingInfo = async () => {
+  const fetchTrack = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const res = await axios.get(`${BASE_URL}/api/delivery/track/${order_id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.get(`${BASE_URL}/api/delivery/track/${orderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setLivreurInfo(res.data.livreur);
-      setLocation(res.data.location);
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Erreur', "Impossible de récupérer les infos du livreur");
+
+      if (res.data?.location) {
+        const next = res.data.location as Coords;
+        setLivreurLoc(next);
+        setLastUpdate(new Date()); // si ton API expose updated_at, utilise-le ici
+        // recadrer en douceur
+        mapRef.current?.animateCamera({
+          center: { latitude: next.latitude, longitude: next.longitude },
+          zoom: 16,
+        }, { duration: 700 });
+      }
+      if (res.data?.livreur) setLivreurInfo(res.data.livreur);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTrackingInfo();
-    const interval = setInterval(fetchTrackingInfo, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!orderId) return;
+    fetchTrack();
+    const id = setInterval(fetchTrack, 5000);
+    return () => clearInterval(id);
+  }, [orderId]);
+
+  const lastUpdateText = useMemo(() => {
+    if (!lastUpdate) return '—';
+    return lastUpdate.toLocaleTimeString();
+  }, [lastUpdate]);
+
+ 
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <BackButton />
-      <View style={styles.container}>
-        <Text style={styles.title}>Suivi de livraison</Text>
-        {loading ? (
-          <ActivityIndicator size="large" color="#00c853" />
-        ) : location ? (
-          Platform.OS !== 'web' ? (
-            <MapView
-              style={styles.map}
-              initialRegion={{
-                latitude: location.lat,
-                longitude: location.lng,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-            >
-              <Marker
-                coordinate={{ latitude: location.lat, longitude: location.lng }}
-                title={livreurInfo?.nom}
-                description={livreurInfo?.telephone}
-              />
-            </MapView>
-          ) : (
-            <Text style={{ textAlign: 'center' }}>Carte non disponible sur le Web</Text>
-          )
-        ) : (
-          <Text style={{ textAlign: 'center' }}>Position du livreur non disponible.</Text>
+      {/* Carte plein écran */}
+      <MapView
+        ref={mapRef}
+        style={StyleSheet.absoluteFillObject}
+        initialRegion={
+          livreurLoc
+            ? { latitude: livreurLoc.latitude, longitude: livreurLoc.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }
+            : undefined
+        }
+      >
+        {livreurLoc && (
+          <Marker
+            coordinate={livreurLoc}
+            title={`Livreur : ${livreurInfo?.nom ?? ''}`}
+            description={livreurInfo?.telephone ?? ''}
+            pinColor="green"
+          />
         )}
+      </MapView>
+
+      {/* Carte : overlay d’info + back */}
+      <View style={styles.infoBox}>
+        <BackButton />
+        <Text style={styles.header}>Suivi de la commande</Text>
+        <Text style={styles.info}> Livreur : {livreurInfo?.nom || '—'}</Text>
+        <Text style={styles.info}>Téléphone : {livreurInfo?.telephone || '—'}</Text>
+      </View>
+
+      {/* Boutons flottants */}
+      <View style={styles.fabs}>
+        <TouchableOpacity
+          style={[styles.fab, { backgroundColor: '#2563eb' }]}
+          onPress={() => {
+            if (!livreurLoc) return;
+            mapRef.current?.animateCamera(
+              { center: livreurLoc, zoom: 16 },
+              { duration: 500 }
+            );
+          }}
+        >
+          <Text style={styles.fabText}>Recentrer</Text>
+        </TouchableOpacity>
+
+
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: '#fff'
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  infoBox: {
+    position: 'absolute',
+    top: 40,
+    left: 16,
+    right: 16,
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 5,
+    zIndex: 999,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 12
+  header: { fontSize: 18, fontWeight: '700', marginTop: 6, marginBottom: 6 },
+  info: { fontSize: 14, color: '#111827', marginBottom: 2 },
+  fabs: {
+    position: 'absolute',
+    right: 16,
+    bottom: 28,
+    gap: 10,
   },
-  map: {
-    flex: 1,
-    borderRadius: 10
-  }
+  fab: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  fabText: { color: '#fff', fontWeight: '700' },
 });

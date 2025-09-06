@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
 export default function AdminDashboard() {
   const router = useRouter();
   const handleLogout = async () => {
@@ -28,22 +29,22 @@ export default function AdminDashboard() {
       </TouchableOpacity>
       
       <TouchableOpacity
-        style={styles.btn}
+        style={styles.button}
         onPress={() => router.push('/pos')}
       >
-        <Text style={styles.btnText}>Interface de vente</Text>
+        <Text style={styles.buttonText}>Interface de vente</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.btn}
+        style={styles.button}
         onPress={() => router.push('/livreursScreen')}
       >
-        <Text style={styles.btnText}>Gestion des livreurs</Text>
+        <Text style={styles.buttonText}>Gestion des livreurs</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.btn}
+        style={styles.button}
         onPress={() => router.push('/PredictionScreen')}
       >
-        <Text style={styles.btnText}>Prediction des ventes par l'IA </Text>
+        <Text style={styles.buttonText}>Prediction des ventes par l'IA </Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.button,  styles.logout]} onPress={handleLogout}>
       <Text style={[styles.buttonText, { color: '#fff' }]}> Se déconnecter</Text>
@@ -52,8 +53,6 @@ export default function AdminDashboard() {
   );
 }
 const styles = StyleSheet.create({
-  btn: { backgroundColor: '#00C851', padding: 16, borderRadius: 8, marginVertical: 8 },
-  btnText: { color: '#fff', fontSize: 16, textAlign: 'center' },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -69,10 +68,10 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#315733ff',
     paddingVertical: 15,
     paddingHorizontal: 25,
-    borderRadius: 10,
+    borderRadius: 20,
     marginBottom: 15,
   },
   buttonText: {

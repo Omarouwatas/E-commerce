@@ -49,8 +49,6 @@ for _ in range(600):
         promo,
         date_commande.strftime("%Y-%m-%d")
     ])
-
-# Sauvegarde en CSV
 df = pd.DataFrame(data, columns=[
     "product_id",
     "quantite",

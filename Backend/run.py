@@ -1,4 +1,4 @@
-from app import create_app
+from app import create_app,socketio
 from apscheduler.schedulers.background import BackgroundScheduler
 from jobs.train_lstm_job import train_lstm
 scheduler = BackgroundScheduler()
@@ -7,4 +7,5 @@ scheduler.start()
 app = create_app()
 
 if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
     app.run(host="0.0.0.0", port=5000,debug=True)

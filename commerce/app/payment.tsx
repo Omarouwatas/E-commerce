@@ -78,14 +78,14 @@ export default function PaymentScreen() {
         style={[styles.paymentOption, paymentMethod === 'cod' && styles.selected]}
         onPress={() => setPaymentMethod('cod')}
       >
-        <Text style={styles.optionText}>💵 Paiement à la livraison</Text>
+        <Text style={styles.optionText}>Paiement à la livraison</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.paymentOption, paymentMethod === 'card' && styles.selected]}
         onPress={() => setPaymentMethod('card')}
       >
-        <Text style={styles.optionText}>💳 Carte Bancaire</Text>
+        <Text style={styles.optionText}>Carte Bancaire</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.orderButton} onPress={handleCreateOrder}>

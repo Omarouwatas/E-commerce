@@ -163,264 +163,127 @@ useLayoutEffect(() => {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: { 
     flex: 1, 
-    backgroundColor: '#0A0A0A' 
-  },
-  
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0A0A0A',
-  },
-  
-  loadingText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    marginTop: 16,
-    fontWeight: '500',
+    backgroundColor: '#f9fafb', // fond clair
   },
 
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0A0A0A',
-    paddingHorizontal: 32,
-  },
-  
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  
-  emptyText: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  
-  emptySubtext: {
-    color: '#888888',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
+  backgroundImage: { flex: 1, width: '100%', height: '100%' },
+
   header: {
     paddingTop: 20,
     paddingHorizontal: 20,
-    paddingBottom: 16,
-    backgroundColor: '#0A0A0A',
+    paddingBottom: 12,
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#1A1A1A',
+    borderBottomColor: '#e5e7eb',
   },
-  
-  headerTitle: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  
-  headerSubtitle: {
-    color: '#00FF7F',
-    fontSize: 14,
-    fontWeight: '500',
-  },
+  headerTitle: { fontSize: 22, fontWeight: '700', color: '#111827' },
+  headerSubtitle: { fontSize: 14, fontWeight: '500', color: '#6b7280' },
 
-  listContainer: { 
-    padding: 20, 
-    paddingBottom: 140 
-  },
-  
+  listContainer: { padding: 16, paddingBottom: 140 },
+
   itemContainer: {
-    marginBottom: 20,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 16,
-    padding: 20,
-    position: 'relative',
-    shadowColor: '#00FF7F',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
-  },
-  
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  
-  imageContainer: {
-    backgroundColor: '#2A2A2A',
+    marginBottom: 16,
+    backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 8,
-    marginRight: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
-  
-  productImage: { 
-    width: 80, 
-    height: 80, 
-    borderRadius: 8,
-    backgroundColor: '#3A3A3A',
+  cardContent: { flexDirection: 'row', alignItems: 'center' },
+
+  imageContainer: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 10,
+    padding: 6,
+    marginRight: 14,
   },
-  
-  productInfo: {
-    flex: 1,
-    paddingRight: 40,
-  },
-  
-  productName: { 
-    color: '#FFFFFF',
-    fontWeight: 'bold', 
-    fontSize: 18,
-    marginBottom: 12,
-    lineHeight: 24,
-  },
-  
-  quantityPriceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  
+  productImage: { width: 70, height: 70, borderRadius: 8 },
+
+  productInfo: { flex: 1, paddingRight: 40 },
+  productName: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 8 },
+
+  quantityPriceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 8,
   },
-  
-  quantityLabel: {
-    color: '#888888',
-    fontSize: 14,
-    marginRight: 8,
-  },
-  
-  quantityValue: {
-    color: '#00FF7F',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  
-  priceText: {
-    color: '#00FF7F',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  
-  removeBtn: { 
+  quantityLabel: { fontSize: 13, color: '#6b7280', marginRight: 6 },
+  quantityValue: { fontSize: 15, fontWeight: '700', color: '#10b981' },
+
+  priceText: { fontSize: 16, fontWeight: '700', color: '#10b981' },
+
+  removeBtn: {
     position: 'absolute',
-    top: 16,
-    right: 16,
-    backgroundColor: '#FF4444',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    top: 12,
+    right: 12,
+    backgroundColor: '#ef4444',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#FF4444',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: '#ef4444',
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
   },
-  
-  removeText: { 
-    color: '#FFFFFF', 
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  removeText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 
   footer: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    backgroundColor: '#1A1A1A',
-    borderTopWidth: 2,
-    borderTopColor: '#00FF7F',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
     paddingHorizontal: 20,
-    paddingVertical: 20,
-    paddingBottom: 34,
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 16,
+    paddingVertical: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 8,
   },
-  
   totalContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#2A2A2A',
+    marginBottom: 12,
   },
-  
-  totalLabel: { 
-    color: '#FFFFFF',
-    fontSize: 18, 
-    fontWeight: '600',
-  },
-  
-  totalAmount: {
-    color: '#00FF7F',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  
+  totalLabel: { fontSize: 16, fontWeight: '600', color: '#111827' },
+  totalAmount: { fontSize: 20, fontWeight: '700', color: '#10b981' },
+
   checkoutBtn: {
-    backgroundColor: '#00FF7F',
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 12,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#00FF7F',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    backgroundColor: '#10b981',
+    paddingVertical: 12,
+    borderRadius: 10,
+    shadowColor: '#10b981',
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 6,
+    elevation: 6,
   },
-  
-  checkoutText: {
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginRight: 8,
-  },
-  
-  checkoutIcon: {
-    color: '#000000',
-    fontSize: 9,
-    fontWeight: 'bold',
-  }
+  checkoutText: { color: '#fff', fontSize: 16, fontWeight: '700', marginRight: 6 },
+  checkoutIcon: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb' },
+  loadingText: { fontSize: 15, color: '#6b7280', marginTop: 10 },
+
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb', padding: 24 },
+  emptyIcon: { fontSize: 60, marginBottom: 16 },
+  emptyText: { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 6 },
+  emptySubtext: { fontSize: 14, color: '#6b7280', textAlign: 'center' },
 });

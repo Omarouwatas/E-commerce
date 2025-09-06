@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Alert,Button ,TouchableOpacity} from 'react-native';
 import { Camera ,CameraView } from 'expo-camera';
 import { useRouter } from 'expo-router';
+import BackButton from '@/components/BackButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
 export default function BarcodeScannerScreen() {
   const router = useRouter();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -19,6 +21,8 @@ export default function BarcodeScannerScreen() {
   if (hasPermission === null) return <Text>Demande de permission...</Text>;
   if (hasPermission === false) return <Text>Accès à la caméra refusé.</Text>;
   return (
+  <SafeAreaView style={{ flex: 1 }}>
+    <BackButton />
     <View style={styles.container}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>← Retour</Text>
@@ -34,7 +38,7 @@ export default function BarcodeScannerScreen() {
         <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
       )}
     </View>
-  );
+  </SafeAreaView>    );
 }
 
 const styles = StyleSheet.create({
